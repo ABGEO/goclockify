@@ -2,14 +2,10 @@ package services
 
 import (
 	"encoding/json"
+	"github.com/abgeo/goclockify/src/config"
 	"io/ioutil"
 	"net/http"
 	"time"
-)
-
-var (
-	baseUrl = "https://api.clockify.me/api/v1/"
-	apiKey  = "" // TODO: Move to config.
 )
 
 type Workplace struct {
@@ -17,8 +13,24 @@ type Workplace struct {
 	Name string
 }
 
-func GetWorkplaces() ([]Workplace, error) {
-	body, err := get(baseUrl + "/workspaces")
+type ClockifyService struct {
+	BaseUrl string
+	Config  *config.Config
+	Client  http.Client
+}
+
+func NewClockifyService(config *config.Config) (*ClockifyService, error) {
+	return &ClockifyService{
+		BaseUrl: "https://api.clockify.me/api/v1/",
+		Config:  config,
+		Client: http.Client{
+			Timeout: time.Second * 5,
+		},
+	}, nil
+}
+
+func (self *ClockifyService) GetWorkplaces() ([]Workplace, error) {
+	body, err := self.get(self.BaseUrl + "/workspaces")
 	if err != nil {
 		return nil, err
 	}
@@ -32,17 +44,15 @@ func GetWorkplaces() ([]Workplace, error) {
 	return workplaces, nil
 }
 
-func get(url string) ([]byte, error) {
-	spaceClient := http.Client{
-		Timeout: time.Second * 2,
-	}
+func (self *ClockifyService) get(url string) ([]byte, error) {
+	spaceClient := self.Client
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("X-Api-Key", apiKey)
+	req.Header.Set("X-Api-Key", self.Config.ClockifyApiToken)
 
 	res, err := spaceClient.Do(req)
 	if err != nil {

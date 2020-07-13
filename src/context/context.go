@@ -2,6 +2,8 @@ package context
 
 import (
 	ColorSchemes "github.com/abgeo/goclockify/colorschemes"
+	"github.com/abgeo/goclockify/src/config"
+	"github.com/abgeo/goclockify/src/services"
 	"github.com/abgeo/goclockify/src/views"
 	ui "github.com/gizak/termui/v3"
 )
@@ -11,16 +13,27 @@ var (
 )
 
 type AppContext struct {
-	Grid *ui.Grid
-	View *views.View
+	Grid   *ui.Grid
+	View   *views.View
+	Config *config.Config
 }
 
 func CreateAppContext() (*AppContext, error) {
+	appConfig, err := config.NewConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	clockifyService, err := services.NewClockifyService(appConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	ui.Theme.Default = ui.NewStyle(ui.Color(ColorScheme.Fg), ui.Color(ColorScheme.Bg))
 	ui.Theme.Block.Title = ui.NewStyle(ui.Color(ColorScheme.BorderLabel), ui.Color(ColorScheme.Bg))
 	ui.Theme.Block.Border = ui.NewStyle(ui.Color(ColorScheme.BorderLine), ui.Color(ColorScheme.Bg))
 
-	view, err := views.CreateView()
+	view, err := views.CreateView(appConfig, clockifyService)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +51,8 @@ func CreateAppContext() (*AppContext, error) {
 	ui.Render(grid)
 
 	return &AppContext{
-		Grid: grid,
-		View: view,
+		Grid:   grid,
+		View:   view,
+		Config: appConfig,
 	}, nil
 }

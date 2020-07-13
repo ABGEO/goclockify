@@ -1,21 +1,25 @@
 package views
 
 import (
+	"github.com/abgeo/goclockify/src/config"
+	"github.com/abgeo/goclockify/src/services"
 	cw "github.com/abgeo/goclockify/src/widgets"
 	w "github.com/abgeo/goclockify/src/widgets"
 )
 
 type View struct {
+	Config     *config.Config
 	Workplaces *w.WorkplacesWidget
 }
 
-func CreateView() (*View, error) {
-	workplaces, err := cw.NewWorkplacesWidget()
+func CreateView(config *config.Config, clockifyService *services.ClockifyService) (*View, error) {
+	workplaces, err := cw.NewWorkplacesWidget(clockifyService)
 	if err != nil {
 		return nil, err
 	}
 
 	return &View{
+		Config:     config,
 		Workplaces: workplaces,
 	}, nil
 }

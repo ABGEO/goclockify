@@ -12,12 +12,12 @@ type WorkplacesWidget struct {
 	Workplaces []services.Workplace
 }
 
-func NewWorkplacesWidget() (*WorkplacesWidget, error) {
+func NewWorkplacesWidget(clockifyService *services.ClockifyService) (*WorkplacesWidget, error) {
 	self := &WorkplacesWidget{
 		Table: cui.NewTable(),
 	}
 
-	workplaces, err := services.GetWorkplaces()
+	workplaces, err := clockifyService.GetWorkplaces()
 	if err != nil {
 		return nil, err
 	}
