@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/abgeo/goclockify/src/config"
 	w "github.com/abgeo/goclockify/src/widgets"
 	"io/ioutil"
@@ -16,13 +17,20 @@ type ClockifyService struct {
 }
 
 func NewClockifyService(config *config.Config) (*ClockifyService, error) {
-	return &ClockifyService{
+	service := &ClockifyService{
 		BaseUrl: "https://api.clockify.me/api/v1/",
 		Config:  config,
 		Client: http.Client{
 			Timeout: time.Second * 5,
 		},
-	}, nil
+	}
+
+	checkAuth, err := service.CheckAuth()
+	if err != nil || !checkAuth {
+		return nil, errors.New("not able to authorize client, check your connection and if your Clockify API token is set correctly")
+	}
+
+	return service, nil
 }
 
 func (self *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
@@ -41,16 +49,7 @@ func (self *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
 }
 
 func (self *ClockifyService) get(url string) ([]byte, error) {
-	spaceClient := self.Client
-
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("X-Api-Key", self.Config.ClockifyApiToken)
-
-	res, err := spaceClient.Do(req)
+	res, err := self.doGet(url)
 	if err != nil {
 		return nil, err
 	}
@@ -65,4 +64,31 @@ func (self *ClockifyService) get(url string) ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func (self *ClockifyService) doGet(url string) (*http.Response, error) {
+	spaceClient := self.Client
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("X-Api-Key", self.Config.ClockifyApiToken)
+
+	res, err := spaceClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (self *ClockifyService) CheckAuth() (bool, error) {
+	res, err := self.doGet(self.BaseUrl + "/user")
+	if err != nil {
+		return false, err
+	}
+
+	return res.StatusCode == http.StatusOK, nil
 }

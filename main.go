@@ -100,6 +100,7 @@ func main() {
 
 	appContext, err := context.CreateAppContext()
 	if err != nil {
+		ui.Close()
 		log.Fatalf("failed to create AppContext: %v", err)
 	}
 
