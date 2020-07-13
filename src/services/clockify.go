@@ -11,9 +11,19 @@ import (
 )
 
 type ClockifyService struct {
-	BaseUrl string
-	Config  *config.Config
-	Client  http.Client
+	BaseUrl     string
+	Config      *config.Config
+	Client      http.Client
+	CurrentUser User
+}
+
+type User struct {
+	ID               string
+	Email            string
+	Name             string
+	ProfilePicture   string
+	ActiveWorkspace  string
+	DefaultWorkspace string
 }
 
 func NewClockifyService(config *config.Config) (*ClockifyService, error) {
@@ -25,10 +35,12 @@ func NewClockifyService(config *config.Config) (*ClockifyService, error) {
 		},
 	}
 
-	checkAuth, err := service.CheckAuth()
-	if err != nil || !checkAuth {
+	currentUser, err := service.getCurrentUser()
+	if err != nil || currentUser.ID == "" {
 		return nil, errors.New("not able to authorize client, check your connection and if your Clockify API token is set correctly")
 	}
+
+	service.CurrentUser = currentUser
 
 	return service, nil
 }
@@ -52,6 +64,10 @@ func (self *ClockifyService) get(url string) ([]byte, error) {
 	res, err := self.doGet(url)
 	if err != nil {
 		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, errors.New("not able to get resource, check your connection")
 	}
 
 	if res.Body != nil {
@@ -84,11 +100,17 @@ func (self *ClockifyService) doGet(url string) (*http.Response, error) {
 	return res, nil
 }
 
-func (self *ClockifyService) CheckAuth() (bool, error) {
-	res, err := self.doGet(self.BaseUrl + "/user")
+func (self *ClockifyService) getCurrentUser() (User, error) {
+	body, err := self.get(self.BaseUrl + "/user")
+	var user User
 	if err != nil {
-		return false, err
+		return user, err
 	}
 
-	return res.StatusCode == http.StatusOK, nil
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }
