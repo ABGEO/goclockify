@@ -3,15 +3,11 @@ package services
 import (
 	"encoding/json"
 	"github.com/abgeo/goclockify/src/config"
+	w "github.com/abgeo/goclockify/src/widgets"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
-
-type Workplace struct {
-	ID   string
-	Name string
-}
 
 type ClockifyService struct {
 	BaseUrl string
@@ -29,13 +25,13 @@ func NewClockifyService(config *config.Config) (*ClockifyService, error) {
 	}, nil
 }
 
-func (self *ClockifyService) GetWorkplaces() ([]Workplace, error) {
+func (self *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
 	body, err := self.get(self.BaseUrl + "/workspaces")
 	if err != nil {
 		return nil, err
 	}
 
-	var workplaces []Workplace
+	var workplaces []w.Workplace
 	err = json.Unmarshal(body, &workplaces)
 	if err != nil {
 		return nil, err

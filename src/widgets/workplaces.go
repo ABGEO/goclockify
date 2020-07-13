@@ -3,23 +3,22 @@ package widgets
 import (
 	"fmt"
 	cui "github.com/abgeo/goclockify/src/goclockify"
-	"github.com/abgeo/goclockify/src/services"
 	ui "github.com/gizak/termui/v3"
 )
 
-type WorkplacesWidget struct {
-	*cui.Table
-	Workplaces []services.Workplace
+type Workplace struct {
+	ID   string
+	Name string
 }
 
-func NewWorkplacesWidget(clockifyService *services.ClockifyService) (*WorkplacesWidget, error) {
+type WorkplacesWidget struct {
+	*cui.Table
+	Workplaces []Workplace
+}
+
+func NewWorkplacesWidget() (*WorkplacesWidget, error) {
 	self := &WorkplacesWidget{
 		Table: cui.NewTable(),
-	}
-
-	workplaces, err := clockifyService.GetWorkplaces()
-	if err != nil {
-		return nil, err
 	}
 
 	self.Title = " Workplaces "
@@ -29,18 +28,20 @@ func NewWorkplacesWidget(clockifyService *services.ClockifyService) (*Workplaces
 	self.PadLeft = 2
 	self.UniqueCol = 0
 	self.Header = []string{"ID", "Name"}
-	self.Workplaces = workplaces
 	self.ColResizer = func() {
 		self.ColWidths = []int{5, maxInt(self.Inner.Dx()-26, 10)}
 	}
 
-	self.workplacesToRows()
-
 	return self, nil
 }
 
+func (self *WorkplacesWidget) SetWorkplaces(workplaces []Workplace) {
+	self.Workplaces = workplaces
+	self.workplacesToRows()
+}
+
 func (self *WorkplacesWidget) workplacesToRows() {
-	var workplaces *[]services.Workplace
+	var workplaces *[]Workplace
 	workplaces = &self.Workplaces
 	strings := make([][]string, len(*workplaces))
 	for i := range *workplaces {

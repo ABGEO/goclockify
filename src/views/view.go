@@ -13,10 +13,17 @@ type View struct {
 }
 
 func CreateView(config *config.Config, clockifyService *services.ClockifyService) (*View, error) {
-	workplaces, err := cw.NewWorkplacesWidget(clockifyService)
+	workplaces, err := cw.NewWorkplacesWidget()
 	if err != nil {
 		return nil, err
 	}
+
+	workplaceItems, err := clockifyService.GetWorkplaces()
+	if err != nil {
+		return nil, err
+	}
+
+	workplaces.SetWorkplaces(workplaceItems)
 
 	return &View{
 		Config:     config,
