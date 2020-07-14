@@ -70,12 +70,15 @@ func (self *TimeEntriesWidget) entriesToRows() {
 	timeEntries = &self.TimeEntries
 	strings := make([][]string, len(*timeEntries))
 	for i, t := range *timeEntries {
-		duration := t.TimeInterval.End.Sub(t.TimeInterval.Start)
-
 		strings[i] = make([]string, 4)
 		strings[i][0] = fmt.Sprintf("%d", i)
 		strings[i][1] = t.Description
-		strings[i][2] = duration.String()
+
+		if t.TimeInterval.End.IsZero() {
+			strings[i][2] = "Running..."
+		} else {
+			strings[i][2] = t.TimeInterval.End.Sub(t.TimeInterval.Start).String()
+		}
 
 		if t.Billable {
 			strings[i][3] = "$"
