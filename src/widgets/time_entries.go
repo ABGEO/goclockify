@@ -2,12 +2,12 @@ package widgets
 
 import (
 	ui "github.com/gizak/termui/v3"
-	"strconv"
+	"time"
 )
 
 type TimeInterval struct {
-	Start    string
-	End      string
+	Start    time.Time
+	End      time.Time
 	Duration string
 }
 
@@ -30,15 +30,14 @@ func NewTimeEntriesWidget() *TimeEntriesWidget {
 		Table: NewTable(),
 	}
 
-	self.Title = " Time Entries "
 	self.ShowCursor = true
 	self.ShowLocation = true
 	self.ColGap = 3
 	self.PadLeft = 2
 	self.UniqueCol = 1
-	self.Header = []string{"Description", "Duration", "Billable"}
+	self.Header = []string{"Description", "Duration", ""}
 	self.ColResizer = func() {
-		self.ColWidths = []int{ui.MaxInt(self.Inner.Dx()-26, 10), 10, 5}
+		self.ColWidths = []int{ui.MaxInt(self.Inner.Dx()-26, 100), 15, 1}
 	}
 
 	return self
@@ -54,10 +53,17 @@ func (self *TimeEntriesWidget) entriesToRows() {
 	timeEntries = &self.TimeEntries
 	strings := make([][]string, len(*timeEntries))
 	for i, t := range *timeEntries {
+		duration := t.TimeInterval.End.Sub(t.TimeInterval.Start)
+
 		strings[i] = make([]string, 3)
 		strings[i][0] = t.Description
-		strings[i][1] = t.TimeInterval.Duration
-		strings[i][2] = strconv.FormatBool(t.Billable)
+		strings[i][1] = duration.String()
+
+		if t.Billable {
+			strings[i][2] = "$"
+		} else {
+			strings[i][2] = ""
+		}
 	}
 	self.Rows = strings
 }
