@@ -42,7 +42,11 @@ func CreateAppContext() (*AppContext, error) {
 
 	grid := ui.NewGrid()
 	grid.Set(
-		ui.NewCol(1.0/4, view.Workplaces),
+		ui.NewCol(
+			1.0/4,
+			ui.NewRow(1.0/8, view.User),
+			ui.NewRow(1.0/2, view.Workplaces),
+		),
 	)
 
 	termWidth, termHeight := ui.TerminalDimensions()

@@ -1,4 +1,4 @@
-package goclockify
+package widgets
 
 import (
 	"fmt"

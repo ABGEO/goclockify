@@ -9,14 +9,19 @@ import (
 
 type View struct {
 	Config     *config.Config
+	User       *w.UserWidget
 	Workplaces *w.WorkplacesWidget
 }
 
 func CreateView(config *config.Config, clockifyService *services.ClockifyService) (*View, error) {
-	workplaces, err := cw.NewWorkplacesWidget()
-	if err != nil {
-		return nil, err
-	}
+	// Setup UserWidget.
+
+	user := cw.NewUserWidget()
+	user.SetUser(clockifyService.CurrentUser)
+
+	// Setup WorkplacesWidget.
+
+	workplaces := cw.NewWorkplacesWidget()
 
 	workplaceItems, err := clockifyService.GetWorkplaces()
 	if err != nil {
@@ -27,6 +32,7 @@ func CreateView(config *config.Config, clockifyService *services.ClockifyService
 
 	return &View{
 		Config:     config,
+		User:       user,
 		Workplaces: workplaces,
 	}, nil
 }

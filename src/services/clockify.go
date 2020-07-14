@@ -14,16 +14,7 @@ type ClockifyService struct {
 	BaseUrl     string
 	Config      *config.Config
 	Client      http.Client
-	CurrentUser User
-}
-
-type User struct {
-	ID               string
-	Email            string
-	Name             string
-	ProfilePicture   string
-	ActiveWorkspace  string
-	DefaultWorkspace string
+	CurrentUser w.User
 }
 
 func NewClockifyService(config *config.Config) (*ClockifyService, error) {
@@ -100,9 +91,9 @@ func (self *ClockifyService) doGet(url string) (*http.Response, error) {
 	return res, nil
 }
 
-func (self *ClockifyService) getCurrentUser() (User, error) {
+func (self *ClockifyService) getCurrentUser() (w.User, error) {
 	body, err := self.get(self.BaseUrl + "/user")
-	var user User
+	var user w.User
 	if err != nil {
 		return user, err
 	}

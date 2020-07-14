@@ -2,7 +2,6 @@ package widgets
 
 import (
 	"fmt"
-	cui "github.com/abgeo/goclockify/src/goclockify"
 	ui "github.com/gizak/termui/v3"
 )
 
@@ -12,13 +11,13 @@ type Workplace struct {
 }
 
 type WorkplacesWidget struct {
-	*cui.Table
+	*Table
 	Workplaces []Workplace
 }
 
-func NewWorkplacesWidget() (*WorkplacesWidget, error) {
+func NewWorkplacesWidget() *WorkplacesWidget {
 	self := &WorkplacesWidget{
-		Table: cui.NewTable(),
+		Table: NewTable(),
 	}
 
 	self.Title = " Workplaces "
@@ -32,7 +31,7 @@ func NewWorkplacesWidget() (*WorkplacesWidget, error) {
 		self.ColWidths = []int{5, maxInt(self.Inner.Dx()-26, 10)}
 	}
 
-	return self, nil
+	return self
 }
 
 func (self *WorkplacesWidget) SetWorkplaces(workplaces []Workplace) {
