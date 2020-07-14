@@ -15,6 +15,21 @@ var (
 	updateInterval = time.Second
 )
 
+func updateTimeEntries(appContext *context.AppContext) {
+	selectedWorkspace, err := appContext.View.Workplaces.GetSelectedWorkplace()
+	if err != nil {
+		ui.Close()
+		log.Fatalf("failed to select workplace: %v", err)
+	}
+	timeEntryItems, err := appContext.ClockifyService.GetTimeEntries(selectedWorkspace.ID)
+	if err != nil {
+		ui.Close()
+		log.Fatalf("failed to get time entries: %v", err)
+	}
+
+	appContext.View.TimeEntries.UpdateData(timeEntryItems, selectedWorkspace)
+}
+
 func eventLoop(appContext *context.AppContext) {
 	drawTicker := time.NewTicker(updateInterval).C
 
@@ -38,48 +53,35 @@ func eventLoop(appContext *context.AppContext) {
 				payload := e.Payload.(ui.Resize)
 				appContext.Grid.SetRect(0, 0, payload.Width, payload.Height)
 				ui.Clear()
-			}
+				ui.Render(appContext.Grid)
 
-			switch e.ID {
-			case "?":
-				ui.Render(appContext.Grid)
-			case "<Resize>":
-				ui.Render(appContext.Grid)
+			// Workplaces events.
+			case "a":
+				appContext.View.Workplaces.ScrollUp()
+				updateTimeEntries(appContext)
+				ui.Render(appContext.View.Workplaces)
+			case "z":
+				appContext.View.Workplaces.ScrollDown()
+				updateTimeEntries(appContext)
+				ui.Render(appContext.View.Workplaces)
+
+			// TimeEntries events.
 			case "<MouseLeft>":
 				payload := e.Payload.(ui.Mouse)
-				appContext.View.Workplaces.HandleClick(payload.X, payload.Y)
-				ui.Render(appContext.View.Workplaces)
+				appContext.View.TimeEntries.HandleClick(payload.X, payload.Y)
+				ui.Render(appContext.View.TimeEntries)
 			case "k", "<Up>", "<MouseWheelUp>":
-				appContext.View.Workplaces.ScrollUp()
-				ui.Render(appContext.View.Workplaces)
+				appContext.View.TimeEntries.ScrollUp()
+				ui.Render(appContext.View.TimeEntries)
 			case "j", "<Down>", "<MouseWheelDown>":
-				appContext.View.Workplaces.ScrollDown()
-				ui.Render(appContext.View.Workplaces)
-			case "<Home>":
-				appContext.View.Workplaces.ScrollTop()
-				ui.Render(appContext.View.Workplaces)
-			case "g":
-				if previousKey == "g" {
-					appContext.View.Workplaces.ScrollTop()
-					ui.Render(appContext.View.Workplaces)
-				}
+				appContext.View.TimeEntries.ScrollDown()
+				ui.Render(appContext.View.TimeEntries)
+			case "g", "<Home>":
+				appContext.View.TimeEntries.ScrollTop()
+				ui.Render(appContext.View.TimeEntries)
 			case "G", "<End>":
-				appContext.View.Workplaces.ScrollBottom()
-				ui.Render(appContext.View.Workplaces)
-			case "<C-d>":
-				appContext.View.Workplaces.ScrollHalfPageDown()
-				ui.Render(appContext.View.Workplaces)
-			case "<C-u>":
-				appContext.View.Workplaces.ScrollHalfPageUp()
-				ui.Render(appContext.View.Workplaces)
-			case "<C-f>":
-				appContext.View.Workplaces.ScrollPageDown()
-				ui.Render(appContext.View.Workplaces)
-			case "<C-b>":
-				appContext.View.Workplaces.ScrollPageUp()
-				ui.Render(appContext.View.Workplaces)
-			case "<Enter>":
-				appContext.View.Workplaces.SelectWorkplace()
+				appContext.View.TimeEntries.ScrollBottom()
+				ui.Render(appContext.View.TimeEntries)
 			}
 
 			if previousKey == e.ID {

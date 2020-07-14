@@ -1,6 +1,7 @@
 package widgets
 
 import (
+	"fmt"
 	ui "github.com/gizak/termui/v3"
 	"time"
 )
@@ -46,6 +47,11 @@ func NewTimeEntriesWidget() *TimeEntriesWidget {
 func (self *TimeEntriesWidget) SetTimeEntries(timeEntries []TimeEntry) {
 	self.TimeEntries = timeEntries
 	self.entriesToRows()
+}
+
+func (self *TimeEntriesWidget) UpdateData(timeEntries []TimeEntry, workplace Workplace) {
+	self.SetTimeEntries(timeEntries)
+	self.Title = fmt.Sprintf(" %s - Time Entries ", workplace.Name)
 }
 
 func (self *TimeEntriesWidget) entriesToRows() {

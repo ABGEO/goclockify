@@ -1,7 +1,6 @@
 package views
 
 import (
-	"fmt"
 	"github.com/abgeo/goclockify/src/config"
 	"github.com/abgeo/goclockify/src/services"
 	cw "github.com/abgeo/goclockify/src/widgets"
@@ -46,8 +45,7 @@ func CreateView(config *config.Config, clockifyService *services.ClockifyService
 		return nil, err
 	}
 
-	timeEntries.SetTimeEntries(timeEntryItems)
-	timeEntries.Title = fmt.Sprintf(" %s - Time Entries ", selectedWorkspace.Name)
+	timeEntries.UpdateData(timeEntryItems, selectedWorkspace)
 
 	return &View{
 		Config:      config,

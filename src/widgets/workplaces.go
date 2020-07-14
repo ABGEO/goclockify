@@ -61,10 +61,3 @@ func (self *WorkplacesWidget) workplacesToRows() {
 	}
 	self.Rows = strings
 }
-
-func (self *WorkplacesWidget) SelectWorkplace() {
-	self.SelectedItem = ""
-
-	ui.Clear()
-	fmt.Println(self.GetSelectedWorkplace())
-}

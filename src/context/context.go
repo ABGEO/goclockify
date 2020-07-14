@@ -13,9 +13,10 @@ var (
 )
 
 type AppContext struct {
-	Grid   *ui.Grid
-	View   *views.View
-	Config *config.Config
+	Grid            *ui.Grid
+	View            *views.View
+	Config          *config.Config
+	ClockifyService *services.ClockifyService
 }
 
 func CreateAppContext() (*AppContext, error) {
@@ -56,8 +57,9 @@ func CreateAppContext() (*AppContext, error) {
 	ui.Render(grid)
 
 	return &AppContext{
-		Grid:   grid,
-		View:   view,
-		Config: appConfig,
+		Grid:            grid,
+		View:            view,
+		Config:          appConfig,
+		ClockifyService: clockifyService,
 	}, nil
 }
