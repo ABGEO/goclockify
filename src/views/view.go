@@ -8,9 +8,10 @@ import (
 )
 
 type View struct {
-	Config     *config.Config
-	User       *w.UserWidget
-	Workplaces *w.WorkplacesWidget
+	Config      *config.Config
+	User        *w.UserWidget
+	Workplaces  *w.WorkplacesWidget
+	TimeEntries *w.TimeEntriesWidget
 }
 
 func CreateView(config *config.Config, clockifyService *services.ClockifyService) (*View, error) {
@@ -30,9 +31,21 @@ func CreateView(config *config.Config, clockifyService *services.ClockifyService
 
 	workplaces.SetWorkplaces(workplaceItems)
 
+	// Setup TimeEntriesWidget
+
+	timeEntries := w.NewTimeEntriesWidget()
+
+	timeEntryItems, err := clockifyService.GetTimeEntries(workplaces.GetSelectedWorkplace())
+	if err != nil {
+		return nil, err
+	}
+
+	timeEntries.SetTimeEntries(timeEntryItems)
+
 	return &View{
-		Config:     config,
-		User:       user,
-		Workplaces: workplaces,
+		Config:      config,
+		User:        user,
+		Workplaces:  workplaces,
+		TimeEntries: timeEntries,
 	}, nil
 }

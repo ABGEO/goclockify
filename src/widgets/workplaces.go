@@ -20,7 +20,7 @@ func NewWorkplacesWidget() *WorkplacesWidget {
 		Table: NewTable(),
 	}
 
-	self.Title = " Workplaces "
+	self.Title = " Workspaces "
 	self.ShowCursor = true
 	self.ShowLocation = true
 	self.ColGap = 3
@@ -28,7 +28,7 @@ func NewWorkplacesWidget() *WorkplacesWidget {
 	self.UniqueCol = 0
 	self.Header = []string{"ID", "Name"}
 	self.ColResizer = func() {
-		self.ColWidths = []int{5, maxInt(self.Inner.Dx()-26, 10)}
+		self.ColWidths = []int{5, ui.MaxInt(self.Inner.Dx()-26, 10)}
 	}
 
 	return self
@@ -37,6 +37,10 @@ func NewWorkplacesWidget() *WorkplacesWidget {
 func (self *WorkplacesWidget) SetWorkplaces(workplaces []Workplace) {
 	self.Workplaces = workplaces
 	self.workplacesToRows()
+}
+
+func (self *WorkplacesWidget) GetSelectedWorkplace() string {
+	return self.Rows[self.SelectedRow][self.UniqueCol]
 }
 
 func (self *WorkplacesWidget) workplacesToRows() {
@@ -53,15 +57,7 @@ func (self *WorkplacesWidget) workplacesToRows() {
 
 func (self *WorkplacesWidget) SelectWorkplace() {
 	self.SelectedItem = ""
-	selectedWorkplace := self.Rows[self.SelectedRow][self.UniqueCol]
 
 	ui.Clear()
-	fmt.Println(selectedWorkplace)
-}
-
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
+	fmt.Println(self.GetSelectedWorkplace())
 }

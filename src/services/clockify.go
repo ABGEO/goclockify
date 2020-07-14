@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/abgeo/goclockify/src/config"
 	w "github.com/abgeo/goclockify/src/widgets"
 	"io/ioutil"
@@ -49,6 +50,21 @@ func (self *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
 	}
 
 	return workplaces, nil
+}
+
+func (self *ClockifyService) GetTimeEntries(workspaceId string) ([]w.TimeEntry, error) {
+	body, err := self.get(fmt.Sprintf("%s/workspaces/%s/user/%s/time-entries", self.BaseUrl, workspaceId, self.CurrentUser.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	var timeEntries []w.TimeEntry
+	err = json.Unmarshal(body, &timeEntries)
+	if err != nil {
+		return nil, err
+	}
+
+	return timeEntries, nil
 }
 
 func (self *ClockifyService) get(url string) ([]byte, error) {

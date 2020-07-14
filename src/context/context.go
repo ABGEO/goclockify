@@ -39,14 +39,15 @@ func CreateAppContext() (*AppContext, error) {
 	}
 
 	view.Workplaces.CursorColor = ui.Color(ColorScheme.TableCursor)
+	view.TimeEntries.CursorColor = ui.Color(ColorScheme.TableCursor)
 
 	grid := ui.NewGrid()
 	grid.Set(
-		ui.NewCol(
-			1.0/4,
-			ui.NewRow(1.0/8, view.User),
-			ui.NewRow(1.0/2, view.Workplaces),
+		ui.NewCol(1.0/4,
+			ui.NewRow(1.0/3, view.User),
+			ui.NewRow(2.0/3, view.Workplaces),
 		),
+		ui.NewCol(3.0/4, view.TimeEntries),
 	)
 
 	termWidth, termHeight := ui.TerminalDimensions()
