@@ -53,11 +53,11 @@ func (self *TimeEntriesWidget) entriesToRows() {
 	var timeEntries *[]TimeEntry
 	timeEntries = &self.TimeEntries
 	strings := make([][]string, len(*timeEntries))
-	for i := range *timeEntries {
+	for i, t := range *timeEntries {
 		strings[i] = make([]string, 3)
-		strings[i][0] = (*timeEntries)[i].Description
-		strings[i][1] = (*timeEntries)[i].TimeInterval.Duration
-		strings[i][2] = strconv.FormatBool((*timeEntries)[i].Billable)
+		strings[i][0] = t.Description
+		strings[i][1] = t.TimeInterval.Duration
+		strings[i][2] = strconv.FormatBool(t.Billable)
 	}
 	self.Rows = strings
 }

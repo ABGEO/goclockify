@@ -3,6 +3,7 @@ package widgets
 import (
 	"fmt"
 	ui "github.com/gizak/termui/v3"
+	"strconv"
 )
 
 type Workplace struct {
@@ -26,9 +27,9 @@ func NewWorkplacesWidget() *WorkplacesWidget {
 	self.ColGap = 3
 	self.PadLeft = 2
 	self.UniqueCol = 0
-	self.Header = []string{"ID", "Name"}
+	self.Header = []string{"No", "Name"}
 	self.ColResizer = func() {
-		self.ColWidths = []int{5, ui.MaxInt(self.Inner.Dx()-26, 10)}
+		self.ColWidths = []int{2, ui.MaxInt(self.Inner.Dx()-26, 10)}
 	}
 
 	return self
@@ -39,18 +40,24 @@ func (self *WorkplacesWidget) SetWorkplaces(workplaces []Workplace) {
 	self.workplacesToRows()
 }
 
-func (self *WorkplacesWidget) GetSelectedWorkplace() string {
-	return self.Rows[self.SelectedRow][self.UniqueCol]
+func (self *WorkplacesWidget) GetSelectedWorkplace() (Workplace, error) {
+	selectedIndex := self.Rows[self.SelectedRow][0]
+	i, err := strconv.Atoi(selectedIndex)
+	if err != nil {
+		return Workplace{}, err
+	}
+
+	return self.Workplaces[i-1], nil
 }
 
 func (self *WorkplacesWidget) workplacesToRows() {
 	var workplaces *[]Workplace
 	workplaces = &self.Workplaces
 	strings := make([][]string, len(*workplaces))
-	for i := range *workplaces {
+	for i, w := range *workplaces {
 		strings[i] = make([]string, 2)
-		strings[i][0] = (*workplaces)[i].ID
-		strings[i][1] = (*workplaces)[i].Name
+		strings[i][0] = fmt.Sprintf("%d", i+1)
+		strings[i][1] = w.Name
 	}
 	self.Rows = strings
 }
