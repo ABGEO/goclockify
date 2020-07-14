@@ -24,12 +24,10 @@ func NewWorkplacesWidget() *WorkplacesWidget {
 	self.Title = " Workspaces "
 	self.ShowCursor = true
 	self.ShowLocation = true
-	self.ColGap = 3
-	self.PadLeft = 2
-	self.UniqueCol = 0
-	self.Header = []string{"No", "Name"}
+	self.PadLeft = 3
+	self.Header = []string{"", "Name"}
 	self.ColResizer = func() {
-		self.ColWidths = []int{2, ui.MaxInt(self.Inner.Dx()-26, 10)}
+		self.ColWidths = []int{0, ui.MinInt(self.Inner.Dx()-26, 50)}
 	}
 
 	return self
@@ -47,7 +45,7 @@ func (self *WorkplacesWidget) GetSelectedWorkplace() (Workplace, error) {
 		return Workplace{}, err
 	}
 
-	return self.Workplaces[i-1], nil
+	return self.Workplaces[i], nil
 }
 
 func (self *WorkplacesWidget) workplacesToRows() {
@@ -56,7 +54,7 @@ func (self *WorkplacesWidget) workplacesToRows() {
 	strings := make([][]string, len(*workplaces))
 	for i, w := range *workplaces {
 		strings[i] = make([]string, 2)
-		strings[i][0] = fmt.Sprintf("%d", i+1)
+		strings[i][0] = fmt.Sprintf("%d", i)
 		strings[i][1] = w.Name
 	}
 	self.Rows = strings

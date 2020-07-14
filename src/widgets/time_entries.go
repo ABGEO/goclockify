@@ -3,6 +3,7 @@ package widgets
 import (
 	"fmt"
 	ui "github.com/gizak/termui/v3"
+	"strconv"
 	"time"
 )
 
@@ -34,11 +35,9 @@ func NewTimeEntriesWidget() *TimeEntriesWidget {
 	self.ShowCursor = true
 	self.ShowLocation = true
 	self.ColGap = 3
-	self.PadLeft = 2
-	self.UniqueCol = 1
-	self.Header = []string{"Description", "Duration", ""}
+	self.Header = []string{"", "Description", "Duration", ""}
 	self.ColResizer = func() {
-		self.ColWidths = []int{ui.MaxInt(self.Inner.Dx()-26, 100), 15, 1}
+		self.ColWidths = []int{0, ui.MinInt(self.Inner.Dx()-26, 100), 15, 1}
 	}
 
 	return self
@@ -46,12 +45,24 @@ func NewTimeEntriesWidget() *TimeEntriesWidget {
 
 func (self *TimeEntriesWidget) SetTimeEntries(timeEntries []TimeEntry) {
 	self.TimeEntries = timeEntries
+	self.SelectedItem = ""
+	self.ScrollTop()
 	self.entriesToRows()
 }
 
 func (self *TimeEntriesWidget) UpdateData(timeEntries []TimeEntry, workplace Workplace) {
 	self.SetTimeEntries(timeEntries)
 	self.Title = fmt.Sprintf(" %s - Time Entries ", workplace.Name)
+}
+
+func (self *TimeEntriesWidget) GetSelectedTimeEntry() (TimeEntry, error) {
+	selectedIndex := self.Rows[self.SelectedRow][0]
+	i, err := strconv.Atoi(selectedIndex)
+	if err != nil {
+		return TimeEntry{}, err
+	}
+
+	return self.TimeEntries[i], nil
 }
 
 func (self *TimeEntriesWidget) entriesToRows() {
@@ -61,14 +72,15 @@ func (self *TimeEntriesWidget) entriesToRows() {
 	for i, t := range *timeEntries {
 		duration := t.TimeInterval.End.Sub(t.TimeInterval.Start)
 
-		strings[i] = make([]string, 3)
-		strings[i][0] = t.Description
-		strings[i][1] = duration.String()
+		strings[i] = make([]string, 4)
+		strings[i][0] = fmt.Sprintf("%d", i)
+		strings[i][1] = t.Description
+		strings[i][2] = duration.String()
 
 		if t.Billable {
-			strings[i][2] = "$"
+			strings[i][3] = "$"
 		} else {
-			strings[i][2] = ""
+			strings[i][3] = ""
 		}
 	}
 	self.Rows = strings
