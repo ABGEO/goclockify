@@ -55,7 +55,7 @@ func (self *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
 func (self *ClockifyService) GetTimeEntries(workspaceId string) ([]w.TimeEntry, error) {
 	body, err := self.get(
 		fmt.Sprintf(
-			"%s/workspaces/%s/user/%s/time-entries?page-size=200",
+			"%s/workspaces/%s/user/%s/time-entries?hydrated=true&page-size=200",
 			self.BaseUrl,
 			workspaceId,
 			self.CurrentUser.ID,

@@ -7,6 +7,17 @@ import (
 	"time"
 )
 
+type Tag struct {
+	ID   string
+	Name string
+}
+
+type Project struct {
+	ID         string
+	Name       string
+	ClientName string
+}
+
 type TimeInterval struct {
 	Start    time.Time
 	End      time.Time
@@ -16,9 +27,9 @@ type TimeInterval struct {
 type TimeEntry struct {
 	ID           string
 	Description  string
-	TagIds       []string
+	Tags         []Tag
 	Billable     bool
-	ProjectId    string
+	Project      Project
 	TimeInterval TimeInterval
 }
 

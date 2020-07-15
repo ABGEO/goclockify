@@ -12,8 +12,16 @@ import (
 )
 
 var (
-	updateInterval = time.Second
+	updateInterval      = time.Second
+	showDashboard       = true
+	showSingleTimeEntry = false
 )
+
+func conditionalRender(condition bool, element ui.Drawable) {
+	if condition {
+		ui.Render(element)
+	}
+}
 
 func updateTimeEntries(appContext *context.AppContext) {
 	selectedWorkspace, err := appContext.View.Workplaces.GetSelectedWorkplace()
@@ -44,44 +52,74 @@ func eventLoop(appContext *context.AppContext) {
 		case <-sigTerm:
 			return
 		case <-drawTicker:
-			ui.Render(appContext.Grid)
+			if showSingleTimeEntry {
+				appContext.View.TimeEntry.UpdateTable()
+				ui.Render(appContext.View.TimeEntry)
+			}
+
+			conditionalRender(showDashboard, appContext.Grid)
 		case e := <-uiEvents:
 			switch e.ID {
 			case "q", "<C-c>":
 				return
+			case "<Escape>":
+				if !showDashboard {
+					showDashboard = true
+					showSingleTimeEntry = false
+					ui.Clear()
+					ui.Render(appContext.Grid)
+				}
 			case "<Resize>":
 				payload := e.Payload.(ui.Resize)
 				appContext.Grid.SetRect(0, 0, payload.Width, payload.Height)
 				ui.Clear()
-				ui.Render(appContext.Grid)
+				conditionalRender(showDashboard, appContext.Grid)
+
+				if showSingleTimeEntry {
+					terminalWidth, terminalHeight := ui.TerminalDimensions()
+					appContext.View.TimeEntry.SetRect(0, 0, terminalWidth, terminalHeight)
+					ui.Render(appContext.View.TimeEntry)
+				}
 
 			// Workplaces events.
 			case "a":
 				appContext.View.Workplaces.ScrollUp()
 				updateTimeEntries(appContext)
-				ui.Render(appContext.View.Workplaces)
+				conditionalRender(showDashboard, appContext.View.Workplaces)
 			case "z":
 				appContext.View.Workplaces.ScrollDown()
 				updateTimeEntries(appContext)
-				ui.Render(appContext.View.Workplaces)
+				conditionalRender(showDashboard, appContext.View.Workplaces)
 
 			// TimeEntries events.
 			case "<MouseLeft>":
 				payload := e.Payload.(ui.Mouse)
 				appContext.View.TimeEntries.HandleClick(payload.X, payload.Y)
-				ui.Render(appContext.View.TimeEntries)
+				conditionalRender(showDashboard, appContext.View.TimeEntries)
 			case "k", "<Up>", "<MouseWheelUp>":
 				appContext.View.TimeEntries.ScrollUp()
-				ui.Render(appContext.View.TimeEntries)
+				conditionalRender(showDashboard, appContext.View.TimeEntries)
 			case "j", "<Down>", "<MouseWheelDown>":
 				appContext.View.TimeEntries.ScrollDown()
-				ui.Render(appContext.View.TimeEntries)
+				conditionalRender(showDashboard, appContext.View.TimeEntries)
 			case "g", "<Home>":
 				appContext.View.TimeEntries.ScrollTop()
-				ui.Render(appContext.View.TimeEntries)
+				conditionalRender(showDashboard, appContext.View.TimeEntries)
 			case "G", "<End>":
 				appContext.View.TimeEntries.ScrollBottom()
-				ui.Render(appContext.View.TimeEntries)
+				conditionalRender(showDashboard, appContext.View.TimeEntries)
+			case "<Enter>":
+				showSingleTimeEntry = !showSingleTimeEntry
+				showDashboard = !showSingleTimeEntry
+
+				if timeEntry, err := appContext.View.TimeEntries.GetSelectedTimeEntry(); showSingleTimeEntry && err == nil {
+					appContext.View.TimeEntry.SetTimeEntry(timeEntry)
+					terminalWidth, terminalHeight := ui.TerminalDimensions()
+					appContext.View.TimeEntry.SetRect(0, 0, terminalWidth, terminalHeight)
+
+					ui.Clear()
+					ui.Render(appContext.View.TimeEntry)
+				}
 			}
 
 			if previousKey == e.ID {
@@ -89,7 +127,6 @@ func eventLoop(appContext *context.AppContext) {
 			} else {
 				previousKey = e.ID
 			}
-
 		}
 	}
 }

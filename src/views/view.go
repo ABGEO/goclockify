@@ -12,6 +12,7 @@ type View struct {
 	User        *w.UserWidget
 	Workplaces  *w.WorkplacesWidget
 	TimeEntries *w.TimeEntriesWidget
+	TimeEntry   *w.TimeEntryWidget
 }
 
 func CreateView(config *config.Config, clockifyService *services.ClockifyService) (*View, error) {
@@ -31,7 +32,7 @@ func CreateView(config *config.Config, clockifyService *services.ClockifyService
 
 	workplaces.SetWorkplaces(workplaceItems)
 
-	// Setup TimeEntriesWidget
+	// Setup TimeEntriesWidget.
 
 	timeEntries := w.NewTimeEntriesWidget()
 
@@ -47,10 +48,14 @@ func CreateView(config *config.Config, clockifyService *services.ClockifyService
 
 	timeEntries.UpdateData(timeEntryItems, selectedWorkspace)
 
+	// Setup TimeEntryWidget.
+	timeEntry := w.NewTimeEntryWidget()
+
 	return &View{
 		Config:      config,
 		User:        user,
 		Workplaces:  workplaces,
 		TimeEntries: timeEntries,
+		TimeEntry:   timeEntry,
 	}, nil
 }
