@@ -56,6 +56,9 @@ func CreateAppContext() (*AppContext, error) {
 
 	ui.Render(grid)
 
+	view.TimeEntries.ScrollTop()
+	ui.Render(view.TimeEntries)
+
 	return &AppContext{
 		Grid:            grid,
 		View:            view,

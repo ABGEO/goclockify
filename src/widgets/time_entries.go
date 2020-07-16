@@ -56,9 +56,9 @@ func NewTimeEntriesWidget() *TimeEntriesWidget {
 
 func (self *TimeEntriesWidget) SetTimeEntries(timeEntries []TimeEntry) {
 	self.TimeEntries = timeEntries
+	self.entriesToRows()
 	self.SelectedItem = ""
 	self.ScrollTop()
-	self.entriesToRows()
 }
 
 func (self *TimeEntriesWidget) UpdateData(timeEntries []TimeEntry, workplace Workplace) {
