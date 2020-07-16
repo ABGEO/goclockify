@@ -1,9 +1,15 @@
 # goclockify
 
+<div align="center">
+<img src="./assets/logo.png" width="30%">
+
 CLI client for Clockify time tracker.
 
 [![GitHub release](https://img.shields.io/github/release/ABGEO/goclockify.svg)](https://github.com/ABGEO/goclockify/releases)
 [![GitHub license](https://img.shields.io/github/license/ABGEO/goclockify.svg)](https://github.com/ABGEO/goclockify/blob/1.x/LICENSE)
+
+<img src="./assets/demo.gif" />
+</div>
 
 ## Installation
 
