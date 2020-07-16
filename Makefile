@@ -1,4 +1,5 @@
 VERSION=$(shell go run main.go --version)
+ARCHIVE_PREFIX="goclockify-$(VERSION)"
 
 .PHONY: default
 default: build-all
@@ -6,24 +7,32 @@ default: build-all
 .PHONY: build-linux
 build-linux-binary:
 	@echo "+ $@"
-	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/binary/goclockify-linux-amd64 .
+	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/$(ARCHIVE_PREFIX)-linux-amd64 .
 
-.PHONY: build-mac
+.PHONY: build-mac-binary
 build-mac-binary:
 	@echo "+ $@"
-	@GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/binary/goclockify-darwin-amd64 .
+	@GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/$(ARCHIVE_PREFIX)-darwin-amd64 .
 
 .PHONY: build-rpm
 build-rpm: build-linux-binary
 	@echo "+ $@"
-	@mkdir "build/rpm" -p
-	@nfpm pkg --config nfpm.yaml --target ./build/rpm/goclockify-linux-amd64.rpm
+	@docker run --rm \
+    	-v "$(PWD):/tmp" \
+    	-e "VERSION=$(VERSION)" \
+    	goreleaser/nfpm pkg \
+    		--config /tmp/nfpm.yaml \
+    		--target /tmp/build/$(ARCHIVE_PREFIX)-linux-amd64.rpm
 
 .PHONY: build-deb
 build-deb: build-linux-binary
 	@echo "+ $@"
-	@mkdir "build/deb" -p
-	@nfpm pkg --config nfpm.yaml --target ./build/deb/goclockify-linux-amd64.deb
+	@docker run --rm \
+    	-v "$(PWD):/tmp" \
+    	-e "VERSION=$(VERSION)" \
+    	goreleaser/nfpm pkg \
+    		--config /tmp/nfpm.yaml \
+    		--target /tmp/build/$(ARCHIVE_PREFIX)-linux-amd64.deb
 
 .PHONY: clean
 clean:
