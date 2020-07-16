@@ -13,6 +13,7 @@ type View struct {
 	Workplaces  *w.WorkplacesWidget
 	TimeEntries *w.TimeEntriesWidget
 	TimeEntry   *w.TimeEntryWidget
+	Help        *w.HelpWidget
 }
 
 func CreateView(config *config.Config, clockifyService *services.ClockifyService) (*View, error) {
@@ -51,11 +52,15 @@ func CreateView(config *config.Config, clockifyService *services.ClockifyService
 	// Setup TimeEntryWidget.
 	timeEntry := w.NewTimeEntryWidget()
 
+	// Setup HelpWidget.
+	help := w.NewHelpWidget()
+
 	return &View{
 		Config:      config,
 		User:        user,
 		Workplaces:  workplaces,
 		TimeEntries: timeEntries,
 		TimeEntry:   timeEntry,
+		Help:        help,
 	}, nil
 }

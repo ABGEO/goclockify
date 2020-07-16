@@ -1,6 +1,9 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"github.com/abgeo/goclockify/src/config"
 	"github.com/abgeo/goclockify/src/context"
 	"log"
 	"os"
@@ -11,11 +14,33 @@ import (
 	ui "github.com/gizak/termui/v3"
 )
 
+const (
+	usage = `%[1]s - CLI client for Clockify time tracker
+
+v%[2]s
+
+Usage: %[1]s [options]
+
+Options:
+  -h, --help  Show this screen.
+
+`
+)
+
 var (
 	updateInterval      = time.Second
 	showDashboard       = true
 	showSingleTimeEntry = false
+	showHelp            = false
 )
+
+func init() {
+	flag.Usage = func() {
+		fmt.Printf(usage, config.AppName, config.Version)
+	}
+
+	flag.Parse()
+}
 
 func conditionalRender(condition bool, element ui.Drawable) {
 	if condition {
@@ -62,10 +87,21 @@ func eventLoop(appContext *context.AppContext) {
 			switch e.ID {
 			case "q", "<C-c>":
 				return
+			case "?":
+				showHelp = !showHelp
+				showDashboard = !showHelp
+
+				if showHelp {
+					ui.Clear()
+					terminalWidth, terminalHeight := ui.TerminalDimensions()
+					appContext.View.Help.SetRect(0, 0, terminalWidth, terminalHeight)
+					ui.Render(appContext.View.Help)
+				}
 			case "<Escape>":
 				if !showDashboard {
 					showDashboard = true
 					showSingleTimeEntry = false
+					showHelp = false
 					ui.Clear()
 					ui.Render(appContext.Grid)
 				}
@@ -74,11 +110,16 @@ func eventLoop(appContext *context.AppContext) {
 				appContext.Grid.SetRect(0, 0, payload.Width, payload.Height)
 				ui.Clear()
 				conditionalRender(showDashboard, appContext.Grid)
+				terminalWidth, terminalHeight := ui.TerminalDimensions()
 
 				if showSingleTimeEntry {
-					terminalWidth, terminalHeight := ui.TerminalDimensions()
 					appContext.View.TimeEntry.SetRect(0, 0, terminalWidth, terminalHeight)
 					ui.Render(appContext.View.TimeEntry)
+				}
+
+				if showHelp {
+					appContext.View.Help.SetRect(0, 0, terminalWidth, terminalHeight)
+					ui.Render(appContext.View.Help)
 				}
 
 			// Workplaces events.

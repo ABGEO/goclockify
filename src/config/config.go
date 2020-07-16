@@ -9,12 +9,17 @@ import (
 	fp "path/filepath"
 )
 
+const (
+	AppName = "goclockify"
+	Version = "1.0.0"
+)
+
 type Config struct {
 	ClockifyApiToken string `json:"clockify_api_token"`
 }
 
 func NewConfig() (*Config, error) {
-	filepath := xdg.New("abgeo", "goclockify").QueryConfig("config")
+	filepath := xdg.New("abgeo", AppName).QueryConfig("config")
 	cfg := Config{
 		ClockifyApiToken: "",
 	}
