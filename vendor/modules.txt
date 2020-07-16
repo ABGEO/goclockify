@@ -1,0 +1,15 @@
+# github.com/OpenPeeDeeP/xdg v0.2.0
+## explicit
+github.com/OpenPeeDeeP/xdg
+# github.com/cjbassi/drawille-go v0.0.0-20190126131713-27dc511fe6fd
+github.com/cjbassi/drawille-go
+# github.com/gizak/termui/v3 v3.0.0
+## explicit
+github.com/gizak/termui/v3
+github.com/gizak/termui/v3/widgets
+# github.com/mattn/go-runewidth v0.0.2
+github.com/mattn/go-runewidth
+# github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7
+github.com/mitchellh/go-wordwrap
+# github.com/nsf/termbox-go v0.0.0-20190121233118-02980233997d
+github.com/nsf/termbox-go
