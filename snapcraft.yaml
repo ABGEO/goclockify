@@ -1,0 +1,27 @@
+name: goclockify
+version: determined-by-version-script
+version-script: git describe --always --tags --dirty
+summary: Clockify client
+description: |
+  CLI client for Clockify time tracker.
+
+confinement: strict
+base: core18
+
+license: MIT
+
+parts:
+  goclockify:
+    source: .
+    plugin: go
+    go-importpath: github.com/abgeo/goclockify
+    build-packages:
+      - git-core
+      - gcc
+
+apps:
+  goclockify:
+    command: bin/goclockify
+    environment:
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
