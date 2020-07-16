@@ -5,7 +5,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-package ColorSchemes
+package theme
 
 /*
 	The standard 256 terminal colors are supported.
@@ -22,7 +22,7 @@ const (
 	Reverse
 )
 
-type ColorScheme struct {
+type Theme struct {
 	Name   string
 	Author string
 
