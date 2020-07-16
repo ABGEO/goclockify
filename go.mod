@@ -11,5 +11,6 @@ go 1.14
 
 require (
 	github.com/OpenPeeDeeP/xdg v0.2.0
+	github.com/docopt/docopt.go v0.0.0-20180111231733-ee0de3bc6815
 	github.com/gizak/termui/v3 v3.0.0
 )

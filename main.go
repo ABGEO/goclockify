@@ -8,10 +8,10 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/abgeo/goclockify/src/config"
 	"github.com/abgeo/goclockify/src/context"
+	"github.com/docopt/docopt.go"
 	"log"
 	"os"
 	"os/signal"
@@ -42,11 +42,10 @@ var (
 )
 
 func init() {
-	flag.Usage = func() {
-		fmt.Printf(usage, config.AppName, config.Version)
+	_, err := docopt.ParseArgs(fmt.Sprintf(usage, config.AppName, config.Version), os.Args[1:], config.Version)
+	if err != nil {
+		log.Fatalf("failed to parse arguments: %v", err)
 	}
-
-	flag.Parse()
 }
 
 func conditionalRender(condition bool, element ui.Drawable) {

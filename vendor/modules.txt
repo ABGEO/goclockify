@@ -3,6 +3,9 @@
 github.com/OpenPeeDeeP/xdg
 # github.com/cjbassi/drawille-go v0.0.0-20190126131713-27dc511fe6fd
 github.com/cjbassi/drawille-go
+# github.com/docopt/docopt.go v0.0.0-20180111231733-ee0de3bc6815
+## explicit
+github.com/docopt/docopt.go
 # github.com/gizak/termui/v3 v3.0.0
 ## explicit
 github.com/gizak/termui/v3

@@ -1,4 +1,4 @@
-VERSION="1.0.0" # TODO: Get from app.
+VERSION=$(shell go run main.go --version)
 
 .PHONY: default
 default: build-all
@@ -29,6 +29,12 @@ build-deb: build-linux-binary
 clean:
 	@echo "+ $@"
 	@rm -rf "build/"
+
+.PHONY: modules
+modules:
+	@echo "+ $@"
+	@go mod tidy
+	@go mod vendor
 
 .PHONY: build-all
 build-all: build-rpm build-deb build-mac-binary
