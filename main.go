@@ -87,7 +87,7 @@ func eventLoop(appContext *context.AppContext) {
 			switch e.ID {
 			case "q", "<C-c>":
 				return
-			case "?":
+			case "<F1>", "?":
 				showHelp = !showHelp
 				showDashboard = !showHelp
 

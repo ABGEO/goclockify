@@ -17,7 +17,7 @@ Time Entries navigation
   - g and <Home>: jump to top
   - G and <End>: jump to bottom
   - <Enter> display time entry details
-  - ? show this message
+  - <F1> and ? show this message
 `
 
 type HelpWidget struct {

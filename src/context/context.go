@@ -8,61 +8,58 @@ import (
 	ui "github.com/gizak/termui/v3"
 )
 
-var (
-	ColorScheme = ColorSchemes.Default
-)
-
 type AppContext struct {
 	Grid            *ui.Grid
 	View            *views.View
 	Config          *config.Config
 	ClockifyService *services.ClockifyService
+	ColorScheme     ColorSchemes.ColorScheme
 }
 
 func CreateAppContext() (*AppContext, error) {
-	appConfig, err := config.NewConfig()
+	context := &AppContext{
+		ColorScheme: ColorSchemes.Default,
+	}
+
+	var err error
+	context.Config, err = config.NewConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	clockifyService, err := services.NewClockifyService(appConfig)
+	context.ClockifyService, err = services.NewClockifyService(context.Config)
 	if err != nil {
 		return nil, err
 	}
 
-	ui.Theme.Default = ui.NewStyle(ui.Color(ColorScheme.Fg), ui.Color(ColorScheme.Bg))
-	ui.Theme.Block.Title = ui.NewStyle(ui.Color(ColorScheme.BorderLabel), ui.Color(ColorScheme.Bg))
-	ui.Theme.Block.Border = ui.NewStyle(ui.Color(ColorScheme.BorderLine), ui.Color(ColorScheme.Bg))
+	ui.Theme.Default = ui.NewStyle(ui.Color(context.ColorScheme.Fg), ui.Color(context.ColorScheme.Bg))
+	ui.Theme.Block.Title = ui.NewStyle(ui.Color(context.ColorScheme.BorderLabel), ui.Color(context.ColorScheme.Bg))
+	ui.Theme.Block.Border = ui.NewStyle(ui.Color(context.ColorScheme.BorderLine), ui.Color(context.ColorScheme.Bg))
 
-	view, err := views.CreateView(appConfig, clockifyService)
+	context.View, err = views.CreateView(context.Config, context.ClockifyService)
 	if err != nil {
 		return nil, err
 	}
 
-	view.Workplaces.CursorColor = ui.Color(ColorScheme.TableCursor)
-	view.TimeEntries.CursorColor = ui.Color(ColorScheme.TableCursor)
+	context.View.Workplaces.CursorColor = ui.Color(context.ColorScheme.TableCursor)
+	context.View.TimeEntries.CursorColor = ui.Color(context.ColorScheme.TableCursor)
 
-	grid := ui.NewGrid()
-	grid.Set(
+	context.Grid = ui.NewGrid()
+	context.Grid.Set(
 		ui.NewCol(1.0/4,
-			ui.NewRow(1.0/3, view.User),
-			ui.NewRow(2.0/3, view.Workplaces),
+			ui.NewRow(1.0/3, context.View.User),
+			ui.NewRow(2.0/3, context.View.Workplaces),
 		),
-		ui.NewCol(3.0/4, view.TimeEntries),
+		ui.NewCol(3.0/4, context.View.TimeEntries),
 	)
 
 	termWidth, termHeight := ui.TerminalDimensions()
-	grid.SetRect(0, 0, termWidth, termHeight)
+	context.Grid.SetRect(0, 0, termWidth, termHeight)
 
-	ui.Render(grid)
+	ui.Render(context.Grid)
 
-	view.TimeEntries.ScrollTop()
-	ui.Render(view.TimeEntries)
+	context.View.TimeEntries.ScrollTop()
+	ui.Render(context.View.TimeEntries)
 
-	return &AppContext{
-		Grid:            grid,
-		View:            view,
-		Config:          appConfig,
-		ClockifyService: clockifyService,
-	}, nil
+	return context, nil
 }
