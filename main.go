@@ -107,18 +107,20 @@ func eventLoop(appContext *context.AppContext) {
 				}
 			case "<Resize>":
 				payload := e.Payload.(ui.Resize)
-				appContext.Grid.SetRect(0, 0, payload.Width, payload.Height)
 				ui.Clear()
-				conditionalRender(showDashboard, appContext.Grid)
-				terminalWidth, terminalHeight := ui.TerminalDimensions()
+
+				if showDashboard {
+					appContext.Grid.SetRect(0, 0, payload.Width, payload.Height)
+					ui.Render(appContext.Grid)
+				}
 
 				if showSingleTimeEntry {
-					appContext.View.TimeEntry.SetRect(0, 0, terminalWidth, terminalHeight)
+					appContext.View.TimeEntry.SetRect(0, 0, payload.Width, payload.Height)
 					ui.Render(appContext.View.TimeEntry)
 				}
 
 				if showHelp {
-					appContext.View.Help.SetRect(0, 0, terminalWidth, terminalHeight)
+					appContext.View.Help.SetRect(0, 0, payload.Width, payload.Height)
 					ui.Render(appContext.View.Help)
 				}
 
