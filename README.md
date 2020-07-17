@@ -5,6 +5,7 @@
 
 A terminal based client for Clockify time tracker
 
+[![goclockify](https://snapcraft.io//goclockify/badge.svg)](https://snapcraft.io/goclockify)
 [![GitHub release](https://img.shields.io/github/release/ABGEO/goclockify.svg)](https://github.com/ABGEO/goclockify/releases)
 [![GitHub license](https://img.shields.io/github/license/ABGEO/goclockify.svg)](https://github.com/ABGEO/goclockify/blob/1.x/LICENSE)
 
@@ -63,6 +64,26 @@ $ go install .
 ```bash
 $ snap install goclockify
 ```
+
+## Setup
+
+1. Create a Clockify [API Key](https://clockify.me/user/settings);
+
+1. Running `goclockify` for the first time, will create a default config file at `~/.config/abgeo/goclockify/config`;  
+**Note**: The path to the config file will be different if you install `goclockify` using Snap. 
+Check the error message (`Config file: ...`).
+
+    ```bash
+    $ goclockify
+    ```
+
+1. Update the config file and set your `clockify_api_token`:
+
+    ```json
+    {
+        "clockify_api_token": "your_api_key"
+    }
+    ```
 
 ## Usage
 
