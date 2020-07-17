@@ -13,6 +13,7 @@ import (
 	"github.com/OpenPeeDeeP/xdg"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	fp "path/filepath"
 )
 
@@ -30,6 +31,10 @@ type Config struct {
 }
 
 func NewConfig() (*Config, error) {
+	if "" == FilePath {
+		FilePath = filepath.Join(filepath.Join(os.Getenv("HOME"), ".config"), "abgeo/goclockify/config")
+	}
+
 	cfg := Config{
 		ClockifyApiToken: "",
 	}
