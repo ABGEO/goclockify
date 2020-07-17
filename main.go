@@ -30,6 +30,7 @@ Usage: %[1]s [options]
 
 Options:
   -h, --help  Show this screen.
+  --version   Print Application version.
 
 `
 )

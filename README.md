@@ -87,6 +87,25 @@ Check the error message (`Config file: ...`).
 
 ## Usage
 
+When everything is set up correctly you can run `goclockify` with the following command:
+
+```bash
+$ goclockify
+```
+
+### Key Mapping
+
+| Key                                  | Action                       |
+|--------------------------------------|------------------------------|
+| `a`                                  | Workplace navigation Up      |
+| `z`                                  | Workplace navigation Down    |
+| `k`, `<Up>` and `<MouseWheelUp>`     | Time Entries navigation Up   |
+| `j`, `<Down>` and `<MouseWheelDown>` | Time Entries navigation Down |
+| `g`, `<Home>`                        | Time Entries jump to Top     |
+| `G`, `<End>`                         | Time Entries jump to Down    |
+| `<Enter>`                            | Display time entry details   |
+| `<F1>`, `?`                          | Show help message            |
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for details.
