@@ -1,13 +1,14 @@
 name: goclockify
 version: determined-by-version-script
-version-script: git describe --always --tags --dirty
+version-script: go run main.go --version
 summary: A terminal based client for Clockify time tracker
 description: |
   CLI client for Clockify time tracker.
 license: MIT
-icon: assets/logo.png
+icon: assets/logo-snap.png
 
 confinement: strict
+grade: stable
 base: core18
 
 parts:
