@@ -25,10 +25,10 @@ type ClockifyService struct {
 	CurrentUser w.User
 }
 
-func NewClockifyService(config *config.Config) (*ClockifyService, error) {
+func NewClockifyService(cnfg *config.Config) (*ClockifyService, error) {
 	service := &ClockifyService{
 		BaseUrl: "https://api.clockify.me/api/v1/",
-		Config:  config,
+		Config:  cnfg,
 		Client: http.Client{
 			Timeout: time.Second * 5,
 		},
@@ -36,7 +36,9 @@ func NewClockifyService(config *config.Config) (*ClockifyService, error) {
 
 	currentUser, err := service.getCurrentUser()
 	if err != nil || currentUser.ID == "" {
-		return nil, errors.New("not able to authorize client, check your connection and if your Clockify API token is set correctly")
+		return nil, errors.New(
+			fmt.Sprintf("not able to authorize client, check your connection and if your Clockify API token is "+
+				"set correctly.\nConfig file: %s", config.FilePath))
 	}
 
 	service.CurrentUser = currentUser

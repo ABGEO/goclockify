@@ -21,19 +21,22 @@ const (
 	Version = "1.0.0"
 )
 
+var (
+	FilePath = xdg.New("abgeo", AppName).QueryConfig("config")
+)
+
 type Config struct {
 	ClockifyApiToken string `json:"clockify_api_token"`
 }
 
 func NewConfig() (*Config, error) {
-	filepath := xdg.New("abgeo", AppName).QueryConfig("config")
 	cfg := Config{
 		ClockifyApiToken: "",
 	}
 
-	file, err := os.Open(filepath)
+	file, err := os.Open(FilePath)
 	if err != nil {
-		file, err = CreateConfigFile(filepath)
+		file, err = CreateConfigFile(FilePath)
 		if err != nil {
 			return &cfg, fmt.Errorf("couldn't open the goclockify config file: (%v)", err)
 		}
