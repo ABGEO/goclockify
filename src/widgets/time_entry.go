@@ -13,11 +13,13 @@ import (
 	"time"
 )
 
+// TimeEntryWidget is a component with the single time entry data
 type TimeEntryWidget struct {
 	*w.Table
 	TimeEntry TimeEntry
 }
 
+// NewTimeEntryWidget creates new TimeEntryWidget
 func NewTimeEntryWidget() *TimeEntryWidget {
 	self := &TimeEntryWidget{
 		Table: w.NewTable(),
@@ -40,26 +42,28 @@ func NewTimeEntryWidget() *TimeEntryWidget {
 	return self
 }
 
-func (self *TimeEntryWidget) SetTimeEntry(timeEntry TimeEntry) {
-	self.TimeEntry = timeEntry
-	self.UpdateTable()
+// SetTimeEntry sets the value of TimeEntryWidget.TimeEntry
+func (t *TimeEntryWidget) SetTimeEntry(timeEntry TimeEntry) {
+	t.TimeEntry = timeEntry
+	t.UpdateTable()
 }
 
-func (self *TimeEntryWidget) UpdateTable() {
-	self.Rows[0][1] = self.TimeEntry.Description
-	self.Rows[1][1] = self.TimeEntry.Project.Name
-	self.Rows[2][1] = self.TimeEntry.Project.ClientName
-	self.Rows[4][1] = self.TimeEntry.TimeInterval.Start.Format("01/02/2006 15:04:05")
-	self.Rows[5][1] = self.TimeEntry.TimeInterval.End.Format("01/02/2006 15:04:05")
+// UpdateTable updates table with TimeEntryWidget.TimeEntry data
+func (t *TimeEntryWidget) UpdateTable() {
+	t.Rows[0][1] = t.TimeEntry.Description
+	t.Rows[1][1] = t.TimeEntry.Project.Name
+	t.Rows[2][1] = t.TimeEntry.Project.ClientName
+	t.Rows[4][1] = t.TimeEntry.TimeInterval.Start.Format("01/02/2006 15:04:05")
+	t.Rows[5][1] = t.TimeEntry.TimeInterval.End.Format("01/02/2006 15:04:05")
 
-	if self.TimeEntry.TimeInterval.End.IsZero() {
-		self.Rows[6][1] = "Running - " + time.Now().Sub(self.TimeEntry.TimeInterval.Start).String()
+	if t.TimeEntry.TimeInterval.End.IsZero() {
+		t.Rows[6][1] = "Running - " + time.Now().Sub(t.TimeEntry.TimeInterval.Start).String()
 	} else {
-		self.Rows[6][1] = self.TimeEntry.TimeInterval.End.Sub(self.TimeEntry.TimeInterval.Start).String()
+		t.Rows[6][1] = t.TimeEntry.TimeInterval.End.Sub(t.TimeEntry.TimeInterval.Start).String()
 	}
 
-	self.Rows[3][1] = ""
-	for _, tag := range self.TimeEntry.Tags {
-		self.Rows[3][1] += tag.Name + " "
+	t.Rows[3][1] = ""
+	for _, tag := range t.TimeEntry.Tags {
+		t.Rows[3][1] += tag.Name + " "
 	}
 }

@@ -11,6 +11,7 @@ import (
 	w "github.com/gizak/termui/v3/widgets"
 )
 
+// User represents the user entity from the API
 type User struct {
 	ID               string
 	Email            string
@@ -20,11 +21,13 @@ type User struct {
 	DefaultWorkspace string
 }
 
+// UserWidget is a component that displays the user data
 type UserWidget struct {
 	*w.Table
 	User User
 }
 
+// NewUserWidget creates new UserWidget
 func NewUserWidget() *UserWidget {
 	self := &UserWidget{
 		Table: w.NewTable(),
@@ -41,12 +44,13 @@ func NewUserWidget() *UserWidget {
 	return self
 }
 
-func (self *UserWidget) SetUser(user User) {
-	self.User = user
-	self.userToTable()
+// SetUser sets the value of UserWidget.User
+func (u *UserWidget) SetUser(user User) {
+	u.User = user
+	u.userToTable()
 }
 
-func (self *UserWidget) userToTable() {
-	self.Rows[0][1] = self.User.Name
-	self.Rows[1][1] = self.User.Email
+func (u *UserWidget) userToTable() {
+	u.Rows[0][1] = u.User.Name
+	u.Rows[1][1] = u.User.Email
 }

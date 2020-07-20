@@ -16,12 +16,16 @@ package theme
 	For example, to get Bold red Labels, you would do 'Labels: 2 | Bold'.
 */
 
+// Bold style
+// Underline style
+// Reverse style
 const (
 	Bold int = 1 << (iota + 9)
 	Underline
 	Reverse
 )
 
+// Theme is an application theme
 type Theme struct {
 	Name   string
 	Author string

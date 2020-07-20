@@ -14,6 +14,7 @@ import (
 	w "github.com/abgeo/goclockify/src/widgets"
 )
 
+// View stores global widget instances
 type View struct {
 	Config      *config.Config
 	User        *w.UserWidget
@@ -23,6 +24,7 @@ type View struct {
 	Help        *w.HelpWidget
 }
 
+// CreateView creates a new View instance
 func CreateView(config *config.Config, clockifyService *services.ClockifyService) (*View, error) {
 	// Setup UserWidget.
 

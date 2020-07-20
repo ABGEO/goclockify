@@ -7,6 +7,7 @@
 
 package theme
 
+// Default is a default application theme
 var Default = Theme{
 	Name:   "Default",
 	Author: "Temuri Takalandze <me@abgeo.dev>",

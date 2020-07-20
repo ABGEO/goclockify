@@ -18,16 +18,18 @@ import (
 	"time"
 )
 
+// ClockifyService is a service to work with the Clockify API
 type ClockifyService struct {
-	BaseUrl     string
+	BaseURL     string
 	Config      *config.Config
 	Client      http.Client
 	CurrentUser w.User
 }
 
+// NewClockifyService creates new Clockify service
 func NewClockifyService(cnfg *config.Config) (*ClockifyService, error) {
 	service := &ClockifyService{
-		BaseUrl: "https://api.clockify.me/api/v1/",
+		BaseURL: "https://api.clockify.me/api/v1/",
 		Config:  cnfg,
 		Client: http.Client{
 			Timeout: time.Second * 5,
@@ -36,9 +38,8 @@ func NewClockifyService(cnfg *config.Config) (*ClockifyService, error) {
 
 	currentUser, err := service.getCurrentUser()
 	if err != nil || currentUser.ID == "" {
-		return nil, errors.New(
-			fmt.Sprintf("not able to authorize client, check your connection and if your Clockify API token is "+
-				"set correctly.\nConfig file: %s", config.FilePath))
+		return nil, fmt.Errorf("not able to authorize client, check your connection and if your Clockify API "+
+			"token is set correctly.\nConfig file: %s", config.FilePath)
 	}
 
 	service.CurrentUser = currentUser
@@ -46,8 +47,9 @@ func NewClockifyService(cnfg *config.Config) (*ClockifyService, error) {
 	return service, nil
 }
 
-func (self *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
-	body, err := self.get(self.BaseUrl + "/workspaces")
+// GetWorkplaces gets all workspaces from the API
+func (s *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
+	body, err := s.get(s.BaseURL + "/workspaces")
 	if err != nil {
 		return nil, err
 	}
@@ -61,13 +63,14 @@ func (self *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
 	return workplaces, nil
 }
 
-func (self *ClockifyService) GetTimeEntries(workspaceId string) ([]w.TimeEntry, error) {
-	body, err := self.get(
+// GetTimeEntries gets latest time entries from given workspace
+func (s *ClockifyService) GetTimeEntries(workspaceID string) ([]w.TimeEntry, error) {
+	body, err := s.get(
 		fmt.Sprintf(
 			"%s/workspaces/%s/user/%s/time-entries?hydrated=true&page-size=200",
-			self.BaseUrl,
-			workspaceId,
-			self.CurrentUser.ID,
+			s.BaseURL,
+			workspaceID,
+			s.CurrentUser.ID,
 		),
 	)
 	if err != nil {
@@ -83,8 +86,8 @@ func (self *ClockifyService) GetTimeEntries(workspaceId string) ([]w.TimeEntry, 
 	return timeEntries, nil
 }
 
-func (self *ClockifyService) get(url string) ([]byte, error) {
-	res, err := self.doGet(url)
+func (s *ClockifyService) get(url string) ([]byte, error) {
+	res, err := s.doGet(url)
 	if err != nil {
 		return nil, err
 	}
@@ -105,15 +108,15 @@ func (self *ClockifyService) get(url string) ([]byte, error) {
 	return body, nil
 }
 
-func (self *ClockifyService) doGet(url string) (*http.Response, error) {
-	spaceClient := self.Client
+func (s *ClockifyService) doGet(url string) (*http.Response, error) {
+	spaceClient := s.Client
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("X-Api-Key", self.Config.ClockifyApiToken)
+	req.Header.Set("X-Api-Key", s.Config.ClockifyAPIToken)
 
 	res, err := spaceClient.Do(req)
 	if err != nil {
@@ -123,8 +126,8 @@ func (self *ClockifyService) doGet(url string) (*http.Response, error) {
 	return res, nil
 }
 
-func (self *ClockifyService) getCurrentUser() (w.User, error) {
-	body, err := self.get(self.BaseUrl + "/user")
+func (s *ClockifyService) getCurrentUser() (w.User, error) {
+	body, err := s.get(s.BaseURL + "/user")
 	var user w.User
 	if err != nil {
 		return user, err

@@ -13,16 +13,19 @@ import (
 	"strconv"
 )
 
+// Workplace represents the workplace entity from the API
 type Workplace struct {
 	ID   string
 	Name string
 }
 
+// WorkplacesWidget is a component that displays workplaces
 type WorkplacesWidget struct {
 	*Table
 	Workplaces []Workplace
 }
 
+// NewWorkplacesWidget creates new WorkplacesWidget
 func NewWorkplacesWidget() *WorkplacesWidget {
 	self := &WorkplacesWidget{
 		Table: NewTable(),
@@ -40,29 +43,31 @@ func NewWorkplacesWidget() *WorkplacesWidget {
 	return self
 }
 
-func (self *WorkplacesWidget) SetWorkplaces(workplaces []Workplace) {
-	self.Workplaces = workplaces
-	self.workplacesToRows()
+// SetWorkplaces sets the value of WorkplacesWidget.Workplaces
+func (w *WorkplacesWidget) SetWorkplaces(workplaces []Workplace) {
+	w.Workplaces = workplaces
+	w.workplacesToRows()
 }
 
-func (self *WorkplacesWidget) GetSelectedWorkplace() (Workplace, error) {
-	selectedIndex := self.Rows[self.SelectedRow][0]
+// GetSelectedWorkplace returns the selected workplace
+func (w *WorkplacesWidget) GetSelectedWorkplace() (Workplace, error) {
+	selectedIndex := w.Rows[w.SelectedRow][0]
 	i, err := strconv.Atoi(selectedIndex)
 	if err != nil {
 		return Workplace{}, err
 	}
 
-	return self.Workplaces[i], nil
+	return w.Workplaces[i], nil
 }
 
-func (self *WorkplacesWidget) workplacesToRows() {
+func (w *WorkplacesWidget) workplacesToRows() {
 	var workplaces *[]Workplace
-	workplaces = &self.Workplaces
+	workplaces = &w.Workplaces
 	strings := make([][]string, len(*workplaces))
 	for i, w := range *workplaces {
 		strings[i] = make([]string, 2)
 		strings[i][0] = fmt.Sprintf("%d", i)
 		strings[i][1] = w.Name
 	}
-	self.Rows = strings
+	w.Rows = strings
 }

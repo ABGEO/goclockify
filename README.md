@@ -105,6 +105,7 @@ $ goclockify
 | `G`, `<End>`                         | Time Entries jump to Down    |
 | `<Enter>`                            | Display time entry details   |
 | `<F1>`, `?`                          | Show help message            |
+| `<Escape>`                           | close the 2nd level window, go to the dashboard |
 
 ## Changelog
 

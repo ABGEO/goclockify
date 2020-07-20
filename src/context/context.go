@@ -15,6 +15,7 @@ import (
 	ui "github.com/gizak/termui/v3"
 )
 
+// AppContext stores application context
 type AppContext struct {
 	Grid            *ui.Grid
 	View            *views.View
@@ -23,6 +24,7 @@ type AppContext struct {
 	Theme           theme.Theme
 }
 
+// CreateAppContext creates new application context object
 func CreateAppContext() (*AppContext, error) {
 	context := &AppContext{
 		Theme: theme.Default,

@@ -12,7 +12,7 @@ import (
 )
 
 const help = `
-Quit: q or <C-c>
+Quit: q and <C-c>
 
 Workspaces navigation
   - a: up
@@ -25,12 +25,17 @@ Time Entries navigation
   - G and <End>: jump to bottom
   - <Enter> display time entry details
   - <F1> and ? show this message
+
+Other
+  - <Escape>: close the 2nd level window, go to the dashboard
 `
 
+// HelpWidget is a component with the help text
 type HelpWidget struct {
 	w.Paragraph
 }
 
+// NewHelpWidget creates new HelpWidget
 func NewHelpWidget() *HelpWidget {
 	self := &HelpWidget{
 		Paragraph: *w.NewParagraph(),

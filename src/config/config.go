@@ -17,26 +17,31 @@ import (
 	fp "path/filepath"
 )
 
+// AppName Application Name
+// Version Application Version
 const (
 	AppName = "goclockify"
 	Version = "1.0.0"
 )
 
+// FilePath Configuration file path
 var (
 	FilePath = xdg.New("abgeo", AppName).QueryConfig("config")
 )
 
+// Config structure type
 type Config struct {
-	ClockifyApiToken string `json:"clockify_api_token"`
+	ClockifyAPIToken string `json:"clockify_api_token"`
 }
 
+// NewConfig creates the new config object from FilePath content
 func NewConfig() (cfg *Config, err error) {
 	if "" == FilePath {
 		FilePath = filepath.Join(filepath.Join(os.Getenv("HOME"), ".config"), "abgeo/goclockify/config")
 	}
 
 	cfg = &Config{
-		ClockifyApiToken: "",
+		ClockifyAPIToken: "",
 	}
 
 	file, err := os.Open(FilePath)
@@ -54,6 +59,7 @@ func NewConfig() (cfg *Config, err error) {
 	return cfg, nil
 }
 
+// CreateConfigFile creates the default config file
 func CreateConfigFile() (file *os.File, err error) {
 	if _, err := os.Stat(FilePath); os.IsNotExist(err) {
 		err := os.MkdirAll(fp.Dir(FilePath), os.ModePerm)

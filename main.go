@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	usage = `%[1]s - CLI client for Clockify time tracker
+	usage = `%[1]s - a terminal based client for Clockify time tracker
 
 v%[2]s
 
