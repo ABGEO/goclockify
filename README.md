@@ -45,6 +45,22 @@ $ sudo dnf localinstall /path/to/goclockify.rpm
 # ...
 ```
 
+### AUR
+
+`goclockify` is available on AUR: https://aur.archlinux.org/packages/goclockify/
+
+Install it using yay
+```bash
+$ yay -S goclockify
+```
+
+or clone the git repository
+```bash
+$ clone https://aur.archlinux.org/goclockify.git
+$ cd goclockify
+$ makepkg -sirc
+```
+
 ### Via Go
 
 You can also get `goclockify` via Go:

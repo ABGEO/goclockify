@@ -4,7 +4,7 @@ ARCHIVE_PREFIX="goclockify-$(VERSION)"
 .PHONY: default
 default: build-all
 
-.PHONY: build-linux
+.PHONY: build-linux-binary
 build-linux-binary:
 	@echo "+ $@"
 	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/$(ARCHIVE_PREFIX)-linux-amd64 .
