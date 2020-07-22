@@ -9,8 +9,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/abgeo/goclockify/src/config"
-	"github.com/abgeo/goclockify/src/context"
+	"github.com/abgeo/goclockify/configs"
+	"github.com/abgeo/goclockify/internal/context"
 	"github.com/docopt/docopt.go"
 	"log"
 	"os"
@@ -43,7 +43,7 @@ var (
 )
 
 func init() {
-	_, err := docopt.ParseArgs(fmt.Sprintf(usage, config.AppName, config.Version), os.Args[1:], config.Version)
+	_, err := docopt.ParseArgs(fmt.Sprintf(usage, configs.AppName, configs.Version), os.Args[1:], configs.Version)
 	if err != nil {
 		log.Fatalf("failed to parse arguments: %v", err)
 	}

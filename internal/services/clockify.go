@@ -11,8 +11,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/abgeo/goclockify/src/config"
-	w "github.com/abgeo/goclockify/src/widgets"
+	"github.com/abgeo/goclockify/configs"
+	w "github.com/abgeo/goclockify/internal/widgets"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -21,13 +21,13 @@ import (
 // ClockifyService is a service to work with the Clockify API
 type ClockifyService struct {
 	BaseURL     string
-	Config      *config.Config
+	Config      *configs.Config
 	Client      http.Client
 	CurrentUser w.User
 }
 
 // NewClockifyService creates new Clockify service
-func NewClockifyService(cnfg *config.Config) (*ClockifyService, error) {
+func NewClockifyService(cnfg *configs.Config) (*ClockifyService, error) {
 	service := &ClockifyService{
 		BaseURL: "https://api.clockify.me/api/v1/",
 		Config:  cnfg,
@@ -39,7 +39,7 @@ func NewClockifyService(cnfg *config.Config) (*ClockifyService, error) {
 	currentUser, err := service.getCurrentUser()
 	if err != nil || currentUser.ID == "" {
 		return nil, fmt.Errorf("not able to authorize client, check your connection and if your Clockify API "+
-			"token is set correctly.\nConfig file: %s", config.FilePath)
+			"token is set correctly.\nConfig file: %s", configs.FilePath)
 	}
 
 	service.CurrentUser = currentUser

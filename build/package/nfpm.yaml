@@ -12,4 +12,4 @@ homepage: "https://github.com/ABGEO/goclockify"
 license: "MIT"
 bindir: "/usr/local/bin"
 files:
-  /tmp/build/goclockify-*-linux-amd64: "/usr/local/bin/goclockify"
+  /tmp/build/output/goclockify-*-linux-amd64: "/usr/local/bin/goclockify"

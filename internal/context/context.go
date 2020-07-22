@@ -8,10 +8,10 @@
 package context
 
 import (
-	"github.com/abgeo/goclockify/src/config"
-	"github.com/abgeo/goclockify/src/services"
-	"github.com/abgeo/goclockify/src/theme"
-	"github.com/abgeo/goclockify/src/views"
+	"github.com/abgeo/goclockify/configs"
+	"github.com/abgeo/goclockify/configs/theme"
+	"github.com/abgeo/goclockify/internal/services"
+	"github.com/abgeo/goclockify/internal/views"
 	ui "github.com/gizak/termui/v3"
 )
 
@@ -19,7 +19,7 @@ import (
 type AppContext struct {
 	Grid            *ui.Grid
 	View            *views.View
-	Config          *config.Config
+	Config          *configs.Config
 	ClockifyService *services.ClockifyService
 	Theme           theme.Theme
 }
@@ -31,7 +31,7 @@ func CreateAppContext() (*AppContext, error) {
 	}
 
 	var err error
-	context.Config, err = config.NewConfig()
+	context.Config, err = configs.NewConfig()
 	if err != nil {
 		return nil, err
 	}

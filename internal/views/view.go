@@ -8,15 +8,15 @@
 package views
 
 import (
-	"github.com/abgeo/goclockify/src/config"
-	"github.com/abgeo/goclockify/src/services"
-	cw "github.com/abgeo/goclockify/src/widgets"
-	w "github.com/abgeo/goclockify/src/widgets"
+	"github.com/abgeo/goclockify/configs"
+	"github.com/abgeo/goclockify/internal/services"
+	cw "github.com/abgeo/goclockify/internal/widgets"
+	w "github.com/abgeo/goclockify/internal/widgets"
 )
 
 // View stores global widget instances
 type View struct {
-	Config      *config.Config
+	Config      *configs.Config
 	User        *w.UserWidget
 	Workplaces  *w.WorkplacesWidget
 	TimeEntries *w.TimeEntriesWidget
@@ -25,7 +25,7 @@ type View struct {
 }
 
 // CreateView creates a new View instance
-func CreateView(config *config.Config, clockifyService *services.ClockifyService) (*View, error) {
+func CreateView(config *configs.Config, clockifyService *services.ClockifyService) (*View, error) {
 	// Setup UserWidget.
 
 	user := cw.NewUserWidget()

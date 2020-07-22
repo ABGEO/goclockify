@@ -1,4 +1,4 @@
-VERSION=$(shell go run main.go --version)
+VERSION=$(shell go run cmd/goclockify/main.go --version)
 ARCHIVE_PREFIX="goclockify-$(VERSION)"
 
 .PHONY: default
@@ -7,12 +7,12 @@ default: build-all
 .PHONY: build-linux-binary
 build-linux-binary:
 	@echo "+ $@"
-	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/$(ARCHIVE_PREFIX)-linux-amd64 .
+	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/output/$(ARCHIVE_PREFIX)-linux-amd64 ./cmd/goclockify
 
 .PHONY: build-mac-binary
 build-mac-binary:
 	@echo "+ $@"
-	@GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/$(ARCHIVE_PREFIX)-darwin-amd64 .
+	@GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -mod=vendor -a -installsuffix cgo -o ./build/output/$(ARCHIVE_PREFIX)-darwin-amd64 ./cmd/goclockify
 
 .PHONY: build-rpm
 build-rpm: build-linux-binary
@@ -21,8 +21,8 @@ build-rpm: build-linux-binary
     	-v "$(PWD):/tmp" \
     	-e "VERSION=$(VERSION)" \
     	goreleaser/nfpm pkg \
-    		--config /tmp/nfpm.yaml \
-    		--target /tmp/build/$(ARCHIVE_PREFIX)-linux-amd64.rpm
+    		--config /tmp/build/package/nfpm.yaml \
+    		--target /tmp/build/output/$(ARCHIVE_PREFIX)-linux-amd64.rpm
 
 .PHONY: build-deb
 build-deb: build-linux-binary
@@ -31,13 +31,13 @@ build-deb: build-linux-binary
     	-v "$(PWD):/tmp" \
     	-e "VERSION=$(VERSION)" \
     	goreleaser/nfpm pkg \
-    		--config /tmp/nfpm.yaml \
-    		--target /tmp/build/$(ARCHIVE_PREFIX)-linux-amd64.deb
+    		--config /tmp/build/package/nfpm.yaml \
+    		--target /tmp/build/output/$(ARCHIVE_PREFIX)-linux-amd64.deb
 
 .PHONY: clean
 clean:
 	@echo "+ $@"
-	@rm -rf "build/"
+	@sudo rm -rf "build/output/"
 
 .PHONY: modules
 modules:

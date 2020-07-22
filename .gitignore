@@ -1,4 +1,4 @@
 .idea
-build
-aur
+build/output
+build/aur
 *.snap
