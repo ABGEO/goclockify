@@ -70,6 +70,16 @@ func updateTimeEntries(appContext *context.AppContext) {
 	appContext.View.TimeEntries.UpdateData(timeEntryItems, selectedWorkspace)
 }
 
+func contains(v string, a []string) bool {
+	for _, i := range a {
+		if i == v {
+			return true
+		}
+	}
+
+	return false
+}
+
 func eventLoop(appContext *context.AppContext) {
 	drawTicker := time.NewTicker(updateInterval).C
 
@@ -77,7 +87,6 @@ func eventLoop(appContext *context.AppContext) {
 	signal.Notify(sigTerm, os.Interrupt, syscall.SIGTERM)
 
 	uiEvents := ui.PollEvents()
-	previousKey := ""
 
 	for {
 		select {
@@ -92,26 +101,6 @@ func eventLoop(appContext *context.AppContext) {
 			conditionalRender(showDashboard, appContext.Grid)
 		case e := <-uiEvents:
 			switch e.ID {
-			case "q", "<C-c>":
-				return
-			case "<F1>", "?":
-				showHelp = !showHelp
-				showDashboard = !showHelp
-
-				if showHelp {
-					ui.Clear()
-					terminalWidth, terminalHeight := ui.TerminalDimensions()
-					appContext.View.Help.SetRect(0, 0, terminalWidth, terminalHeight)
-					ui.Render(appContext.View.Help)
-				}
-			case "<Escape>":
-				if !showDashboard {
-					showDashboard = true
-					showSingleTimeEntry = false
-					showHelp = false
-					ui.Clear()
-					ui.Render(appContext.Grid)
-				}
 			case "<Resize>":
 				payload := e.Payload.(ui.Resize)
 				ui.Clear()
@@ -131,34 +120,59 @@ func eventLoop(appContext *context.AppContext) {
 					ui.Render(appContext.View.Help)
 				}
 
+			case "<MouseLeft>":
+				payload := e.Payload.(ui.Mouse)
+				appContext.View.TimeEntries.HandleClick(payload.X, payload.Y)
+				conditionalRender(showDashboard, appContext.View.TimeEntries)
+			}
+
+			// Configurable key mapping
+			switch {
+			case contains(e.ID, appContext.Config.KeyMapping.Other.Quit):
+				return
+			case contains(e.ID, appContext.Config.KeyMapping.Other.Help):
+				showHelp = !showHelp
+				showDashboard = !showHelp
+
+				if showHelp {
+					ui.Clear()
+					terminalWidth, terminalHeight := ui.TerminalDimensions()
+					appContext.View.Help.SetRect(0, 0, terminalWidth, terminalHeight)
+					ui.Render(appContext.View.Help)
+				}
+			case contains(e.ID, appContext.Config.KeyMapping.Other.CloseWindow):
+				if !showDashboard {
+					showDashboard = true
+					showSingleTimeEntry = false
+					showHelp = false
+					ui.Clear()
+					ui.Render(appContext.Grid)
+				}
+
 			// Workplaces events.
-			case "a":
+			case contains(e.ID, appContext.Config.KeyMapping.Workspace.NavigationUp):
 				appContext.View.Workplaces.ScrollUp()
 				updateTimeEntries(appContext)
 				conditionalRender(showDashboard, appContext.View.Workplaces)
-			case "z":
+			case contains(e.ID, appContext.Config.KeyMapping.Workspace.NavigationDown):
 				appContext.View.Workplaces.ScrollDown()
 				updateTimeEntries(appContext)
 				conditionalRender(showDashboard, appContext.View.Workplaces)
 
 			// TimeEntries events.
-			case "<MouseLeft>":
-				payload := e.Payload.(ui.Mouse)
-				appContext.View.TimeEntries.HandleClick(payload.X, payload.Y)
-				conditionalRender(showDashboard, appContext.View.TimeEntries)
-			case "k", "<Up>", "<MouseWheelUp>":
+			case contains(e.ID, appContext.Config.KeyMapping.TimeEntries.NavigationUp):
 				appContext.View.TimeEntries.ScrollUp()
 				conditionalRender(showDashboard, appContext.View.TimeEntries)
-			case "j", "<Down>", "<MouseWheelDown>":
+			case contains(e.ID, appContext.Config.KeyMapping.TimeEntries.NavigationDown):
 				appContext.View.TimeEntries.ScrollDown()
 				conditionalRender(showDashboard, appContext.View.TimeEntries)
-			case "g", "<Home>":
+			case contains(e.ID, appContext.Config.KeyMapping.TimeEntries.NavigationToTop):
 				appContext.View.TimeEntries.ScrollTop()
 				conditionalRender(showDashboard, appContext.View.TimeEntries)
-			case "G", "<End>":
+			case contains(e.ID, appContext.Config.KeyMapping.TimeEntries.NavigationToBottom):
 				appContext.View.TimeEntries.ScrollBottom()
 				conditionalRender(showDashboard, appContext.View.TimeEntries)
-			case "<Enter>":
+			case contains(e.ID, appContext.Config.KeyMapping.TimeEntries.NavigationSelect):
 				showSingleTimeEntry = !showSingleTimeEntry
 				showDashboard = !showSingleTimeEntry
 
@@ -170,12 +184,6 @@ func eventLoop(appContext *context.AppContext) {
 					ui.Clear()
 					ui.Render(appContext.View.TimeEntry)
 				}
-			}
-
-			if previousKey == e.ID {
-				previousKey = ""
-			} else {
-				previousKey = e.ID
 			}
 		}
 	}

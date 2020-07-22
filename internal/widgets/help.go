@@ -24,10 +24,10 @@ Time Entries navigation
   - g and <Home>: jump to top
   - G and <End>: jump to bottom
   - <Enter> display time entry details
-  - <F1> and ? show this message
 
 Other
   - <Escape>: close the 2nd level window, go to the dashboard
+  - <F1> and ? show this message
 `
 
 // HelpWidget is a component with the help text
