@@ -16,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	fp "path/filepath"
+	"reflect"
 )
 
 // AppName Application Name
@@ -87,6 +88,10 @@ func NewConfig() (cfg *Config, err error) {
 		return cfg, fmt.Errorf("the goclockify config file isn't valid json: (%v)", err)
 	}
 
+	if err = validate(*cfg, nil); err != nil {
+		return nil, err
+	}
+
 	return cfg, nil
 }
 
@@ -120,7 +125,7 @@ func CreateConfigFile() (file *os.File, err error) {
 			},
 		},
 	}
-	payload, err := configToJSON(config)
+	payload, err := toJSON(config)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +143,7 @@ func CreateConfigFile() (file *os.File, err error) {
 	return file, nil
 }
 
-func configToJSON(config Config) ([]byte, error) {
+func toJSON(config Config) ([]byte, error) {
 	b := &bytes.Buffer{}
 	e := json.NewEncoder(b)
 	e.SetEscapeHTML(false)
@@ -148,4 +153,35 @@ func configToJSON(config Config) ([]byte, error) {
 	json.Indent(&b2, b.Bytes(), "", "  ")
 
 	return b2.Bytes(), err
+}
+
+func validate(i interface{}, usedKeys map[string]bool) (err error) {
+	if usedKeys == nil {
+		usedKeys = make(map[string]bool)
+	}
+
+	v := reflect.ValueOf(i)
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if field.Kind() == reflect.Struct {
+			err = validate(field.Interface(), usedKeys)
+			if err != nil {
+				return err
+			}
+		} else if field.Kind() == reflect.Slice {
+			slice, ok := field.Interface().([]string)
+			if ok {
+				for _, s := range slice {
+					if _, ok := usedKeys[s]; ok {
+						return fmt.Errorf("invalid key mapping: key \"%s\" already in use", s)
+					}
+
+					usedKeys[s] = true
+				}
+			}
+		}
+	}
+
+	return nil
 }
