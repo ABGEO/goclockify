@@ -7,7 +7,7 @@ A terminal based client for Clockify time tracker
 
 [![GitHub release](https://img.shields.io/github/release/ABGEO/goclockify.svg)](https://github.com/ABGEO/goclockify/releases)
 [![GitHub license](https://img.shields.io/github/license/ABGEO/goclockify.svg)](https://github.com/ABGEO/goclockify/blob/1.x/LICENSE)
-![AUR version](https://img.shields.io/aur/version/goclockify)
+[![AUR version](https://img.shields.io/aur/version/goclockify)](https://aur.archlinux.org/packages/goclockify/)
 [![goclockify](https://snapcraft.io//goclockify/badge.svg)](https://snapcraft.io/goclockify)
 
 <img src="./assets/demo.gif" />
