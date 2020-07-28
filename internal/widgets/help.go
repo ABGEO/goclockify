@@ -8,6 +8,8 @@
 package widgets
 
 import (
+	"fmt"
+	"github.com/abgeo/goclockify/configs"
 	w "github.com/gizak/termui/v3/widgets"
 )
 
@@ -28,6 +30,9 @@ Time Entries navigation
 Other
   - <Escape>: close the 2nd level window, go to the dashboard
   - <F1> and ? show this message
+
+You can change default key mapping in your config file:
+%s
 `
 
 // HelpWidget is a component with the help text
@@ -42,7 +47,7 @@ func NewHelpWidget() *HelpWidget {
 	}
 
 	self.Title = " Help "
-	self.Text = help
+	self.Text = fmt.Sprintf(help, configs.FilePath)
 
 	return self
 }

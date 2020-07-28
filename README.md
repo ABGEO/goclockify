@@ -5,9 +5,10 @@
 
 A terminal based client for Clockify time tracker
 
-[![goclockify](https://snapcraft.io//goclockify/badge.svg)](https://snapcraft.io/goclockify)
 [![GitHub release](https://img.shields.io/github/release/ABGEO/goclockify.svg)](https://github.com/ABGEO/goclockify/releases)
 [![GitHub license](https://img.shields.io/github/license/ABGEO/goclockify.svg)](https://github.com/ABGEO/goclockify/blob/1.x/LICENSE)
+![AUR version](https://img.shields.io/aur/version/goclockify)
+[![goclockify](https://snapcraft.io//goclockify/badge.svg)](https://snapcraft.io/goclockify)
 
 <img src="./assets/demo.gif" />
 </div>
@@ -109,7 +110,9 @@ When everything is set up correctly you can run `goclockify` with the following 
 $ goclockify
 ```
 
-### Key Mapping
+### Default Key Mapping
+
+**Note**: You can change them in your config file.
 
 | Key                                  | Action                       |
 |--------------------------------------|------------------------------|
