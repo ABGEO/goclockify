@@ -197,12 +197,14 @@ func actionWorkspaceNavDown(appContext *context.AppContext, _ *ui.Event) {
 	appContext.View.Workplaces.ScrollDown()
 	updateTimeEntries(appContext)
 	conditionalRender(showDashboard, appContext.View.Workplaces)
+	conditionalRender(showDashboard, appContext.View.TimeEntries)
 }
 
 func actionWorkspaceNavUp(appContext *context.AppContext, _ *ui.Event) {
 	appContext.View.Workplaces.ScrollUp()
 	updateTimeEntries(appContext)
 	conditionalRender(showDashboard, appContext.View.Workplaces)
+	conditionalRender(showDashboard, appContext.View.TimeEntries)
 }
 
 func actionQuit(_ *context.AppContext, _ *ui.Event) {
