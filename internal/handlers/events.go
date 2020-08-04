@@ -98,16 +98,20 @@ func createActionMap(appContext *context.AppContext) (mapping map[string]func(*c
 		mapping[k] = actionTimeEntriesNavDown
 	}
 
-	for _, k := range ckm.TimeEntries.NavigationSelect {
-		mapping[k] = actionTimeEntriesNavSelect
-	}
-
 	for _, k := range ckm.TimeEntries.NavigationToBottom {
 		mapping[k] = actionTimeEntriesNavToBottom
 	}
 
 	for _, k := range ckm.TimeEntries.NavigationToTop {
 		mapping[k] = actionTimeEntriesNavToTop
+	}
+
+	for _, k := range ckm.TimeEntries.NavigationSelect {
+		mapping[k] = actionTimeEntriesNavSelect
+	}
+
+	for _, k := range ckm.TimeEntries.Delete {
+		mapping[k] = actionTimeEntriesDelete
 	}
 
 	// Other mapping
@@ -180,6 +184,17 @@ func actionTimeEntriesNavSelect(appContext *context.AppContext, _ *ui.Event) {
 
 		ui.Clear()
 		ui.Render(appContext.View.TimeEntry)
+	}
+}
+
+func actionTimeEntriesDelete(appContext *context.AppContext, _ *ui.Event) {
+	workplace, _ := appContext.View.Workplaces.GetSelectedWorkplace()
+	timeEntry, _ := appContext.View.TimeEntries.GetSelectedTimeEntry()
+
+	err := appContext.ClockifyService.DeleteTimeEntry(workplace.ID, timeEntry.ID)
+	if err == nil {
+		updateTimeEntries(appContext)
+		conditionalRender(showDashboard, appContext.View.TimeEntries)
 	}
 }
 
