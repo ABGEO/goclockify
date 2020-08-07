@@ -8,8 +8,10 @@
 package handlers
 
 import (
+	"github.com/abgeo/goclockify/internal/components"
 	"github.com/abgeo/goclockify/internal/context"
 	ui "github.com/gizak/termui/v3"
+	"image"
 	"log"
 	"os"
 	"os/signal"
@@ -18,10 +20,15 @@ import (
 )
 
 var (
-	updateInterval      = time.Second
+	updateInterval = time.Second
+
 	showDashboard       = true
 	showSingleTimeEntry = false
 	showHelp            = false
+
+	blockMainInput = false
+
+	shownConfirm *components.Confirm
 )
 
 // Initialize new events handler
@@ -45,8 +52,26 @@ func Initialize(appContext *context.AppContext) {
 			case ui.ResizeEvent:
 				actionResize(appContext, &e)
 			case ui.KeyboardEvent, ui.MouseEvent:
-				if action, ok := actionMap[e.ID]; ok {
-					action(appContext, &e)
+				if !blockMainInput {
+					if action, ok := actionMap[e.ID]; ok {
+						action(appContext, &e)
+					}
+				}
+
+				switch e.ID {
+				case "<Escape>":
+					if shownConfirm != nil {
+						blockMainInput = false
+						shownConfirm = nil
+						conditionalRender(showDashboard, appContext.Grid)
+					}
+				case "<Enter>":
+					if shownConfirm != nil {
+						shownConfirm.Callback()
+						blockMainInput = false
+						shownConfirm = nil
+						conditionalRender(showDashboard, appContext.Grid)
+					}
 				}
 			}
 		}
@@ -98,16 +123,20 @@ func createActionMap(appContext *context.AppContext) (mapping map[string]func(*c
 		mapping[k] = actionTimeEntriesNavDown
 	}
 
-	for _, k := range ckm.TimeEntries.NavigationSelect {
-		mapping[k] = actionTimeEntriesNavSelect
-	}
-
 	for _, k := range ckm.TimeEntries.NavigationToBottom {
 		mapping[k] = actionTimeEntriesNavToBottom
 	}
 
 	for _, k := range ckm.TimeEntries.NavigationToTop {
 		mapping[k] = actionTimeEntriesNavToTop
+	}
+
+	for _, k := range ckm.TimeEntries.NavigationSelect {
+		mapping[k] = actionTimeEntriesNavSelect
+	}
+
+	for _, k := range ckm.TimeEntries.Delete {
+		mapping[k] = actionTimeEntriesDelete
 	}
 
 	// Other mapping
@@ -137,6 +166,10 @@ func actionDrawTicker(appContext *context.AppContext) {
 	}
 
 	conditionalRender(showDashboard, appContext.Grid)
+
+	if shownConfirm != nil {
+		shownConfirm.Render()
+	}
 }
 
 func actionResize(appContext *context.AppContext, e *ui.Event) {
@@ -156,6 +189,14 @@ func actionResize(appContext *context.AppContext, e *ui.Event) {
 	if showHelp {
 		appContext.View.Help.SetRect(0, 0, payload.Width, payload.Height)
 		ui.Render(appContext.View.Help)
+	}
+
+	if shownConfirm != nil {
+		shownConfirm.Location = image.Point{
+			X: payload.Width / 2,
+			Y: payload.Height / 2,
+		}
+		shownConfirm.Render()
 	}
 }
 
@@ -183,6 +224,31 @@ func actionTimeEntriesNavSelect(appContext *context.AppContext, _ *ui.Event) {
 	}
 }
 
+func actionTimeEntriesDelete(appContext *context.AppContext, _ *ui.Event) {
+	blockMainInput = true
+	shownConfirm = components.NewConfirm()
+	shownConfirm.Text = "Do you want to remove this Time Entry?"
+
+	terminalWidth, terminalHeight := ui.TerminalDimensions()
+	shownConfirm.Location = image.Point{
+		X: terminalWidth / 2,
+		Y: terminalHeight / 2,
+	}
+
+	shownConfirm.Callback = func() {
+		workplace, _ := appContext.View.Workplaces.GetSelectedWorkplace()
+		timeEntry, _ := appContext.View.TimeEntries.GetSelectedTimeEntry()
+
+		err := appContext.ClockifyService.DeleteTimeEntry(workplace.ID, timeEntry.ID)
+		if err == nil {
+			updateTimeEntries(appContext)
+			conditionalRender(showDashboard, appContext.View.TimeEntries)
+		}
+	}
+
+	shownConfirm.Render()
+}
+
 func actionTimeEntriesNavToBottom(appContext *context.AppContext, _ *ui.Event) {
 	appContext.View.TimeEntries.ScrollBottom()
 	conditionalRender(showDashboard, appContext.View.TimeEntries)
@@ -197,12 +263,14 @@ func actionWorkspaceNavDown(appContext *context.AppContext, _ *ui.Event) {
 	appContext.View.Workplaces.ScrollDown()
 	updateTimeEntries(appContext)
 	conditionalRender(showDashboard, appContext.View.Workplaces)
+	conditionalRender(showDashboard, appContext.View.TimeEntries)
 }
 
 func actionWorkspaceNavUp(appContext *context.AppContext, _ *ui.Event) {
 	appContext.View.Workplaces.ScrollUp()
 	updateTimeEntries(appContext)
 	conditionalRender(showDashboard, appContext.View.Workplaces)
+	conditionalRender(showDashboard, appContext.View.TimeEntries)
 }
 
 func actionQuit(_ *context.AppContext, _ *ui.Event) {

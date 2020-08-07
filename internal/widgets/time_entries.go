@@ -9,6 +9,7 @@ package widgets
 
 import (
 	"fmt"
+	"github.com/abgeo/goclockify/internal/components"
 	ui "github.com/gizak/termui/v3"
 	"strconv"
 	"time"
@@ -46,14 +47,14 @@ type TimeEntry struct {
 
 // TimeEntriesWidget is a component with the time entries
 type TimeEntriesWidget struct {
-	*Table
+	*components.Table
 	TimeEntries []TimeEntry
 }
 
 // NewTimeEntriesWidget creates new TimeEntriesWidget
 func NewTimeEntriesWidget() *TimeEntriesWidget {
 	self := &TimeEntriesWidget{
-		Table: NewTable(),
+		Table: components.NewTable(),
 	}
 
 	self.ShowCursor = true

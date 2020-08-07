@@ -29,7 +29,7 @@ type ClockifyService struct {
 // NewClockifyService creates new Clockify service
 func NewClockifyService(cnfg *configs.Config) (*ClockifyService, error) {
 	service := &ClockifyService{
-		BaseURL: "https://api.clockify.me/api/v1/",
+		BaseURL: "https://api.clockify.me/api/v1",
 		Config:  cnfg,
 		Client: http.Client{
 			Timeout: time.Second * 5,
@@ -45,6 +45,21 @@ func NewClockifyService(cnfg *configs.Config) (*ClockifyService, error) {
 	service.CurrentUser = currentUser
 
 	return service, nil
+}
+
+func (s *ClockifyService) getCurrentUser() (w.User, error) {
+	body, err := s.get(s.BaseURL + "/user")
+	var user w.User
+	if err != nil {
+		return user, err
+	}
+
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }
 
 // GetWorkplaces gets all workspaces from the API
@@ -86,8 +101,29 @@ func (s *ClockifyService) GetTimeEntries(workspaceID string) ([]w.TimeEntry, err
 	return timeEntries, nil
 }
 
+// RemoveTimeEntry deletes given time entry
+func (s *ClockifyService) DeleteTimeEntry(workspaceID string, id string) error {
+	url := fmt.Sprintf(
+		"%s/workspaces/%s/time-entries/%s",
+		s.BaseURL,
+		workspaceID,
+		id,
+	)
+
+	res, err := s.doRequest(http.MethodDelete, url)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != http.StatusNoContent {
+		return errors.New("unable to delete selected time entry")
+	}
+
+	return nil
+}
+
 func (s *ClockifyService) get(url string) ([]byte, error) {
-	res, err := s.doGet(url)
+	res, err := s.doRequest(http.MethodGet, url)
 	if err != nil {
 		return nil, err
 	}
@@ -108,35 +144,20 @@ func (s *ClockifyService) get(url string) ([]byte, error) {
 	return body, nil
 }
 
-func (s *ClockifyService) doGet(url string) (*http.Response, error) {
-	spaceClient := s.Client
+func (s *ClockifyService) doRequest(method string, url string) (*http.Response, error) {
+	client := s.Client
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Set("X-Api-Key", s.Config.ClockifyAPIToken)
 
-	res, err := spaceClient.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
 	return res, nil
-}
-
-func (s *ClockifyService) getCurrentUser() (w.User, error) {
-	body, err := s.get(s.BaseURL + "/user")
-	var user w.User
-	if err != nil {
-		return user, err
-	}
-
-	err = json.Unmarshal(body, &user)
-	if err != nil {
-		return user, err
-	}
-
-	return user, nil
 }
