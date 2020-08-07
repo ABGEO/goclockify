@@ -9,6 +9,7 @@ package widgets
 
 import (
 	"fmt"
+	"github.com/abgeo/goclockify/internal/components"
 	ui "github.com/gizak/termui/v3"
 	"strconv"
 )
@@ -21,14 +22,14 @@ type Workplace struct {
 
 // WorkplacesWidget is a component that displays workplaces
 type WorkplacesWidget struct {
-	*Table
+	*components.Table
 	Workplaces []Workplace
 }
 
 // NewWorkplacesWidget creates new WorkplacesWidget
 func NewWorkplacesWidget() *WorkplacesWidget {
 	self := &WorkplacesWidget{
-		Table: NewTable(),
+		Table: components.NewTable(),
 	}
 
 	self.Title = " Workspaces "

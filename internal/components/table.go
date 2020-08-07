@@ -1,6 +1,6 @@
 // Borrowed from https://github.com/cjbassi/gotop :)
 
-package widgets
+package components
 
 import (
 	"fmt"
