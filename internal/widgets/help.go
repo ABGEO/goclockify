@@ -26,6 +26,7 @@ Time Entries navigation
   - g and <Home>: jump to top
   - G and <End>: jump to bottom
   - <Enter> display time entry details
+  - <Delete> delete selected Time Entry
 
 Other
   - <Escape>: close the 2nd level window, go to the dashboard
