@@ -16,10 +16,11 @@ import (
 // Input widget type
 type Input struct {
 	ui.Block
-	text        string
-	TextStyle   ui.Style
-	cursorX     int
-	isCapturing bool
+	text          string
+	TextStyle     ui.Style
+	ActionMapping map[string]func()
+	cursorX       int
+	isCapturing   bool
 }
 
 // NewInput creates new Input widget
@@ -50,8 +51,13 @@ EventLoop:
 				i.removeLeft()
 			case "<Delete>":
 				i.removeRight()
+			case "<Escape>":
+				break EventLoop
 			default:
-				if char := i.getChar(e.ID); char != byte(0) {
+				if callback, ok := i.ActionMapping[e.ID]; ok {
+					callback()
+					break EventLoop
+				} else if char := i.getChar(e.ID); char != byte(0) {
 					i.AddText(string(char))
 				} else {
 					break EventLoop
@@ -63,6 +69,7 @@ EventLoop:
 	}
 
 	i.isCapturing = false
+	ui.Render(i)
 }
 
 // AddText updates the content of the text field based on cursor position.
@@ -157,5 +164,7 @@ func (i *Input) Draw(buf *ui.Buffer) {
 		}
 
 		termbox.SetCursor(cursorXOffset+i.cursorX, cursorYOffset)
+	} else {
+		termbox.HideCursor()
 	}
 }
