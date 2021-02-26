@@ -11,6 +11,7 @@ import (
 	ui "github.com/gizak/termui/v3"
 	"github.com/nsf/termbox-go"
 	"image"
+	"unicode/utf8"
 )
 
 // Input widget type
@@ -52,14 +53,23 @@ EventLoop:
 			case "<Delete>":
 				i.removeRight()
 			case "<Escape>":
+				i.isCapturing = false
+				ui.Render(i)
+
 				break EventLoop
 			default:
 				if callback, ok := i.ActionMapping[e.ID]; ok {
+					i.isCapturing = false
+					ui.Render(i)
+
 					callback()
 					break EventLoop
-				} else if char := i.getChar(e.ID); char != byte(0) {
+				} else if char := i.getChar(e.ID); char != rune(0) {
 					i.AddText(string(char))
 				} else {
+					i.isCapturing = false
+					ui.Render(i)
+
 					break EventLoop
 				}
 			}
@@ -67,9 +77,6 @@ EventLoop:
 			ui.Render(i)
 		}
 	}
-
-	i.isCapturing = false
-	ui.Render(i)
 }
 
 // AddText updates the content of the text field based on cursor position.
@@ -116,8 +123,8 @@ func (i *Input) removeRight() {
 	}
 }
 
-func (i *Input) getChar(s string) byte {
-	mapping := map[string]byte{
+func (i *Input) getChar(s string) rune {
+	mapping := map[string]rune{
 		"<Space>": ' ',
 	}
 
@@ -125,11 +132,12 @@ func (i *Input) getChar(s string) byte {
 		return val
 	}
 
-	if len(s) == 1 {
-		return s[0]
+	if utf8.RuneCountInString(s) == 1 {
+		r, _ := utf8.DecodeRuneInString(s)
+		return r
 	}
 
-	return byte(0)
+	return rune(0)
 }
 
 // Draw implements the ui.Drawable interface.

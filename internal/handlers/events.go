@@ -135,6 +135,10 @@ func createActionMap(appContext *context.AppContext) (mapping map[string]func(*c
 		mapping[k] = actionTimeEntriesNavSelect
 	}
 
+	for _, k := range ckm.TimeEntries.Add {
+		mapping[k] = actionTimeEntriesAdd
+	}
+
 	for _, k := range ckm.TimeEntries.Delete {
 		mapping[k] = actionTimeEntriesDelete
 	}
@@ -221,6 +225,43 @@ func actionTimeEntriesNavSelect(appContext *context.AppContext, _ *ui.Event) {
 
 		ui.Clear()
 		ui.Render(appContext.View.TimeEntry)
+	}
+}
+
+func actionTimeEntriesAdd(appContext *context.AppContext, e *ui.Event) {
+	blockMainInput = true
+	showDashboard = false
+
+	form := components.NewTimeEntryForm()
+	form.SubmitCallback = func() {
+		workplace, _ := appContext.View.Workplaces.GetSelectedWorkplace()
+		err := appContext.ClockifyService.AddTimeEntry(workplace.ID, form.GetFormData())
+		if err == nil {
+			updateTimeEntries(appContext)
+		}
+
+		blockMainInput = false
+		actionCloseWindow(appContext, e)
+	}
+
+	ui.Clear()
+	form.Render()
+
+Loop:
+	for {
+		event := <-ui.PollEvents()
+		switch event.ID {
+		case "<Tab>":
+			form.ActiveInput--
+			form.FocusNext()
+		case "<Enter>":
+			form.SubmitCallback()
+			break Loop
+		case "<Escape>":
+			actionCloseWindow(appContext, e)
+			blockMainInput = false
+			break Loop
+		}
 	}
 }
 
