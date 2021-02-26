@@ -44,6 +44,7 @@ type TimeEntriesKeyMapping struct {
 	NavigationToTop    []string `json:"nav_to_top"`
 	NavigationToBottom []string `json:"nav_to_bottom"`
 	NavigationSelect   []string `json:"nav_select"`
+	Add                []string `json:"add"`
 	Delete             []string `json:"delete"`
 }
 
@@ -118,6 +119,7 @@ func CreateConfigFile() (file *os.File, err error) {
 				NavigationToTop:    []string{"g", "<Home>"},
 				NavigationToBottom: []string{"G", "<End>"},
 				NavigationSelect:   []string{"<Enter>"},
+				Add:                []string{"<C-n>"},
 				Delete:             []string{"<Delete>"},
 			},
 			Other: OtherKeyMapping{

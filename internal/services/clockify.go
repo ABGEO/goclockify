@@ -8,11 +8,14 @@
 package services
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/abgeo/goclockify/configs"
+	"github.com/abgeo/goclockify/internal/components"
 	w "github.com/abgeo/goclockify/internal/widgets"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -101,6 +104,33 @@ func (s *ClockifyService) GetTimeEntries(workspaceID string) ([]w.TimeEntry, err
 	return timeEntries, nil
 }
 
+// AddTimeEntry creates a new time entry
+func (s *ClockifyService) AddTimeEntry(workspaceID string, data components.TimeEntryFormData) error {
+	url := fmt.Sprintf(
+		"%s/workspaces/%s/time-entries",
+		s.BaseURL,
+		workspaceID,
+	)
+
+	dataMap := map[string]string{"description": data.Title}
+	dataJson, _ := json.Marshal(dataMap)
+	res, err := s.doRequest(
+		http.MethodPost,
+		url,
+		bytes.NewBuffer(dataJson),
+		http.Header{"Content-Type": []string{"application/json"}},
+	)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != http.StatusCreated {
+		return errors.New("unable to create the time entry")
+	}
+
+	return nil
+}
+
 // RemoveTimeEntry deletes given time entry
 func (s *ClockifyService) DeleteTimeEntry(workspaceID string, id string) error {
 	url := fmt.Sprintf(
@@ -110,7 +140,7 @@ func (s *ClockifyService) DeleteTimeEntry(workspaceID string, id string) error {
 		id,
 	)
 
-	res, err := s.doRequest(http.MethodDelete, url)
+	res, err := s.doRequest(http.MethodDelete, url, nil, http.Header{})
 	if err != nil {
 		return err
 	}
@@ -123,7 +153,7 @@ func (s *ClockifyService) DeleteTimeEntry(workspaceID string, id string) error {
 }
 
 func (s *ClockifyService) get(url string) ([]byte, error) {
-	res, err := s.doRequest(http.MethodGet, url)
+	res, err := s.doRequest(http.MethodGet, url, nil, http.Header{})
 	if err != nil {
 		return nil, err
 	}
@@ -144,14 +174,15 @@ func (s *ClockifyService) get(url string) ([]byte, error) {
 	return body, nil
 }
 
-func (s *ClockifyService) doRequest(method string, url string) (*http.Response, error) {
+func (s *ClockifyService) doRequest(method string, url string, body io.Reader, header http.Header) (*http.Response, error) {
 	client := s.Client
 
-	req, err := http.NewRequest(method, url, nil)
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
 	}
 
+	req.Header = header
 	req.Header.Set("X-Api-Key", s.Config.ClockifyAPIToken)
 
 	res, err := client.Do(req)
