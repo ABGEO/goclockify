@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## [v1.2.0] - 2021-03-16
+
+### Added
+- Dime entry Deletion feature (#2)
+- Dime entry Edit feature (#3)
+- Dime entry Creation feature (#4)
+
 ## [v1.1.0] - 2020-07-28
 
 ### Fixed
