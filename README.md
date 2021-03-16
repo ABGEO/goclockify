@@ -124,6 +124,8 @@ $ goclockify
 | `G`, `<End>`                         | Time Entries jump to Down    |
 | `<Enter>`                            | Display time entry details   |
 | `<Delete>`                           | Delete selected Time Entry   |
+| `Ctrl + n`                           | Create new time entry |
+| `Ctrl + e`                           | Edit the selected time entry |
 | `<F1>`, `?`                          | Show help message            |
 | `<Escape>`                           | close the 2nd level window, go to the dashboard |
 
