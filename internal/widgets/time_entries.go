@@ -10,45 +10,15 @@ package widgets
 import (
 	"fmt"
 	"github.com/abgeo/goclockify/internal/components"
+	"github.com/abgeo/goclockify/internal/types"
 	ui "github.com/gizak/termui/v3"
 	"strconv"
-	"time"
 )
-
-// Tag represents the tag entity from the API
-type Tag struct {
-	ID   string
-	Name string
-}
-
-// Project represents the project entity from the API
-type Project struct {
-	ID         string
-	Name       string
-	ClientName string
-}
-
-// TimeInterval represents the time interval entity from the API
-type TimeInterval struct {
-	Start    time.Time
-	End      time.Time
-	Duration string
-}
-
-// TimeEntry represents the time entry entity from the API
-type TimeEntry struct {
-	ID           string
-	Description  string
-	Tags         []Tag
-	Billable     bool
-	Project      Project
-	TimeInterval TimeInterval
-}
 
 // TimeEntriesWidget is a component with the time entries
 type TimeEntriesWidget struct {
 	*components.Table
-	TimeEntries []TimeEntry
+	TimeEntries []types.TimeEntry
 }
 
 // NewTimeEntriesWidget creates new TimeEntriesWidget
@@ -69,7 +39,7 @@ func NewTimeEntriesWidget() *TimeEntriesWidget {
 }
 
 // UpdateData updates and reloads TimeEntriesWidget
-func (w *TimeEntriesWidget) UpdateData(timeEntries []TimeEntry, workplace Workplace) {
+func (w *TimeEntriesWidget) UpdateData(timeEntries []types.TimeEntry, workplace Workplace) {
 	w.TimeEntries = timeEntries
 	w.Title = fmt.Sprintf(" %s - Time Entries ", workplace.Name)
 	w.SelectedItem = ""
@@ -78,18 +48,18 @@ func (w *TimeEntriesWidget) UpdateData(timeEntries []TimeEntry, workplace Workpl
 }
 
 // GetSelectedTimeEntry returns the selected time entry
-func (w *TimeEntriesWidget) GetSelectedTimeEntry() (TimeEntry, error) {
+func (w *TimeEntriesWidget) GetSelectedTimeEntry() (types.TimeEntry, error) {
 	selectedIndex := w.Rows[w.SelectedRow][0]
 	i, err := strconv.Atoi(selectedIndex)
 	if err != nil {
-		return TimeEntry{}, err
+		return types.TimeEntry{}, err
 	}
 
 	return w.TimeEntries[i], nil
 }
 
 func (w *TimeEntriesWidget) entriesToRows() {
-	var timeEntries *[]TimeEntry
+	var timeEntries *[]types.TimeEntry
 	timeEntries = &w.TimeEntries
 	strings := make([][]string, len(*timeEntries))
 	for i, t := range *timeEntries {

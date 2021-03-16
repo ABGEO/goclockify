@@ -46,6 +46,7 @@ type TimeEntriesKeyMapping struct {
 	NavigationSelect   []string `json:"nav_select"`
 	Add                []string `json:"add"`
 	Delete             []string `json:"delete"`
+	Edit               []string `json:"edit"`
 }
 
 // OtherKeyMapping is a structure for general key mapping
@@ -121,6 +122,7 @@ func CreateConfigFile() (file *os.File, err error) {
 				NavigationSelect:   []string{"<Enter>"},
 				Add:                []string{"<C-n>"},
 				Delete:             []string{"<Delete>"},
+				Edit:               []string{"<C-e>"},
 			},
 			Other: OtherKeyMapping{
 				Quit:        []string{"q", "<C-c>"},

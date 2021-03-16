@@ -8,6 +8,7 @@
 package widgets
 
 import (
+	"github.com/abgeo/goclockify/internal/types"
 	ui "github.com/gizak/termui/v3"
 	w "github.com/gizak/termui/v3/widgets"
 	"time"
@@ -16,7 +17,7 @@ import (
 // TimeEntryWidget is a component with the single time entry data
 type TimeEntryWidget struct {
 	*w.Table
-	TimeEntry TimeEntry
+	TimeEntry types.TimeEntry
 }
 
 // NewTimeEntryWidget creates new TimeEntryWidget
@@ -43,7 +44,7 @@ func NewTimeEntryWidget() *TimeEntryWidget {
 }
 
 // SetTimeEntry sets the value of TimeEntryWidget.TimeEntry
-func (t *TimeEntryWidget) SetTimeEntry(timeEntry TimeEntry) {
+func (t *TimeEntryWidget) SetTimeEntry(timeEntry types.TimeEntry) {
 	t.TimeEntry = timeEntry
 	t.UpdateTable()
 }

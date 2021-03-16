@@ -8,23 +8,14 @@
 package widgets
 
 import (
+	"github.com/abgeo/goclockify/internal/types"
 	w "github.com/gizak/termui/v3/widgets"
 )
-
-// User represents the user entity from the API
-type User struct {
-	ID               string
-	Email            string
-	Name             string
-	ProfilePicture   string
-	ActiveWorkspace  string
-	DefaultWorkspace string
-}
 
 // UserWidget is a component that displays the user data
 type UserWidget struct {
 	*w.Table
-	User User
+	User types.User
 }
 
 // NewUserWidget creates new UserWidget
@@ -45,7 +36,7 @@ func NewUserWidget() *UserWidget {
 }
 
 // SetUser sets the value of UserWidget.User
-func (u *UserWidget) SetUser(user User) {
+func (u *UserWidget) SetUser(user types.User) {
 	u.User = user
 	u.userToTable()
 }

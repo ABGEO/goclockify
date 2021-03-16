@@ -1,18 +1,15 @@
 package components
 
 import (
+	"github.com/abgeo/goclockify/internal/types"
 	ui "github.com/gizak/termui/v3"
 	w "github.com/gizak/termui/v3/widgets"
 )
 
-type TimeEntryFormData struct {
-	Title string
-}
-
 type TimeEntryForm struct {
-	Title          *Input
+	Description    *Input
 	ActiveInput    int
-	Data           TimeEntryFormData
+	Data           types.TimeEntry
 	SubmitCallback func()
 
 	inputs []*Input
@@ -20,7 +17,7 @@ type TimeEntryForm struct {
 
 func NewTimeEntryForm() *TimeEntryForm {
 	f := &TimeEntryForm{
-		Title:       NewInput(),
+		Description: NewInput(),
 		ActiveInput: 0,
 	}
 
@@ -29,10 +26,10 @@ func NewTimeEntryForm() *TimeEntryForm {
 		"<Enter>": f.Submit,
 	}
 
-	f.Title.ActionMapping = actionMapping
+	f.Description.ActionMapping = actionMapping
 
 	// Add all focusable inputs to inputs field.
-	f.inputs = append(f.inputs, f.Title)
+	f.inputs = append(f.inputs, f.Description)
 
 	return f
 }
@@ -48,9 +45,9 @@ func (f *TimeEntryForm) Render() {
 	help.SetRect(0, 0, 100, 10)
 
 	// Setup inputs.
-	f.Title.SetRect(0, 10, 100, 13)
-	f.Title.AddText(f.Data.Title)
-	f.Title.Title = " Title "
+	f.Description.SetRect(0, 10, 100, 13)
+	f.Description.AddText(f.Data.Description)
+	f.Description.Title = " Title "
 
 	// Setup pseudo buttons.
 	btnNegative := w.NewParagraph()
@@ -70,7 +67,7 @@ func (f *TimeEntryForm) Render() {
 	btnPositive.SetRect(17, 13, 33, 16)
 
 	// Render elements.
-	ui.Render(help, f.Title, btnNegative, btnPositive)
+	ui.Render(help, f.Description, btnNegative, btnPositive)
 	f.GetActiveInput().Capture()
 }
 
@@ -92,8 +89,8 @@ func (f *TimeEntryForm) GetActiveInput() *Input {
 	return f.inputs[f.ActiveInput]
 }
 
-func (f *TimeEntryForm) GetFormData() TimeEntryFormData {
-	return TimeEntryFormData{
-		Title: f.Title.GetText(),
-	}
+func (f *TimeEntryForm) GetData() types.TimeEntry {
+	f.Data.Description = f.Description.GetText()
+
+	return f.Data
 }
