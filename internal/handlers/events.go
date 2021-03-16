@@ -143,6 +143,10 @@ func createActionMap(appContext *context.AppContext) (mapping map[string]func(*c
 		mapping[k] = actionTimeEntriesDelete
 	}
 
+	for _, k := range ckm.TimeEntries.Edit {
+		mapping[k] = actionTimeEntriesEdit
+	}
+
 	// Other mapping
 
 	for _, k := range ckm.Other.Quit {
@@ -235,7 +239,7 @@ func actionTimeEntriesAdd(appContext *context.AppContext, e *ui.Event) {
 	form := components.NewTimeEntryForm()
 	form.SubmitCallback = func() {
 		workplace, _ := appContext.View.Workplaces.GetSelectedWorkplace()
-		err := appContext.ClockifyService.AddTimeEntry(workplace.ID, form.GetFormData())
+		err := appContext.ClockifyService.AddTimeEntry(workplace.ID, form.GetData())
 		if err == nil {
 			updateTimeEntries(appContext)
 		}
@@ -288,6 +292,44 @@ func actionTimeEntriesDelete(appContext *context.AppContext, _ *ui.Event) {
 	}
 
 	shownConfirm.Render()
+}
+
+func actionTimeEntriesEdit(appContext *context.AppContext, e *ui.Event) {
+	blockMainInput = true
+	showDashboard = false
+
+	form := components.NewTimeEntryForm()
+	form.Data, _ = appContext.View.TimeEntries.GetSelectedTimeEntry()
+	form.SubmitCallback = func() {
+		workplace, _ := appContext.View.Workplaces.GetSelectedWorkplace()
+		err := appContext.ClockifyService.EditTimeEntry(workplace.ID, form.GetData())
+		if err == nil {
+			updateTimeEntries(appContext)
+		}
+
+		blockMainInput = false
+		actionCloseWindow(appContext, e)
+	}
+
+	ui.Clear()
+	form.Render()
+
+Loop:
+	for {
+		event := <-ui.PollEvents()
+		switch event.ID {
+		case "<Tab>":
+			form.ActiveInput--
+			form.FocusNext()
+		case "<Enter>":
+			form.SubmitCallback()
+			break Loop
+		case "<Escape>":
+			actionCloseWindow(appContext, e)
+			blockMainInput = false
+			break Loop
+		}
+	}
 }
 
 func actionTimeEntriesNavToBottom(appContext *context.AppContext, _ *ui.Event) {

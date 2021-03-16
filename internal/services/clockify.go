@@ -13,7 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/abgeo/goclockify/configs"
-	"github.com/abgeo/goclockify/internal/components"
+	"github.com/abgeo/goclockify/internal/types"
 	w "github.com/abgeo/goclockify/internal/widgets"
 	"io"
 	"io/ioutil"
@@ -26,7 +26,7 @@ type ClockifyService struct {
 	BaseURL     string
 	Config      *configs.Config
 	Client      http.Client
-	CurrentUser w.User
+	CurrentUser types.User
 }
 
 // NewClockifyService creates new Clockify service
@@ -50,9 +50,9 @@ func NewClockifyService(cnfg *configs.Config) (*ClockifyService, error) {
 	return service, nil
 }
 
-func (s *ClockifyService) getCurrentUser() (w.User, error) {
+func (s *ClockifyService) getCurrentUser() (types.User, error) {
 	body, err := s.get(s.BaseURL + "/user")
-	var user w.User
+	var user types.User
 	if err != nil {
 		return user, err
 	}
@@ -82,7 +82,7 @@ func (s *ClockifyService) GetWorkplaces() ([]w.Workplace, error) {
 }
 
 // GetTimeEntries gets latest time entries from given workspace
-func (s *ClockifyService) GetTimeEntries(workspaceID string) ([]w.TimeEntry, error) {
+func (s *ClockifyService) GetTimeEntries(workspaceID string) ([]types.TimeEntry, error) {
 	body, err := s.get(
 		fmt.Sprintf(
 			"%s/workspaces/%s/user/%s/time-entries?hydrated=true&page-size=200",
@@ -95,7 +95,7 @@ func (s *ClockifyService) GetTimeEntries(workspaceID string) ([]w.TimeEntry, err
 		return nil, err
 	}
 
-	var timeEntries []w.TimeEntry
+	var timeEntries []types.TimeEntry
 	err = json.Unmarshal(body, &timeEntries)
 	if err != nil {
 		return nil, err
@@ -105,14 +105,14 @@ func (s *ClockifyService) GetTimeEntries(workspaceID string) ([]w.TimeEntry, err
 }
 
 // AddTimeEntry creates a new time entry
-func (s *ClockifyService) AddTimeEntry(workspaceID string, data components.TimeEntryFormData) error {
+func (s *ClockifyService) AddTimeEntry(workspaceID string, data types.TimeEntry) error {
 	url := fmt.Sprintf(
 		"%s/workspaces/%s/time-entries",
 		s.BaseURL,
 		workspaceID,
 	)
 
-	dataMap := map[string]string{"description": data.Title}
+	dataMap := map[string]string{"description": data.Description}
 	dataJson, _ := json.Marshal(dataMap)
 	res, err := s.doRequest(
 		http.MethodPost,
@@ -126,6 +126,39 @@ func (s *ClockifyService) AddTimeEntry(workspaceID string, data components.TimeE
 
 	if res.StatusCode != http.StatusCreated {
 		return errors.New("unable to create the time entry")
+	}
+
+	return nil
+}
+
+// EditTimeEntry edits an time entry
+func (s *ClockifyService) EditTimeEntry(workspaceID string, data types.TimeEntry) error {
+	url := fmt.Sprintf(
+		"%s/workspaces/%s/time-entries/%s",
+		s.BaseURL,
+		workspaceID,
+		data.ID,
+	)
+
+	dataMap := map[string]string{
+		"start":       data.TimeInterval.Start.Format("2006-01-02T15:04:05Z"),
+		"description": data.Description,
+	}
+
+	dataJson, _ := json.Marshal(dataMap)
+	res, err := s.doRequest(
+		http.MethodPut,
+		url,
+		bytes.NewBuffer(dataJson),
+		http.Header{"Content-Type": []string{"application/json"}},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return errors.New("unable to update the time entry")
 	}
 
 	return nil
